@@ -28,7 +28,7 @@ namespace Nomina.Models
         [Column("emp_no")]
         public int? EmpNo { get; set; }  // nullable: puede ser un usuario sin empleado
 
-        [ForeignKey("empNo")]
+        [ForeignKey("EmpNo")]
         public Employee Employee { get; set; }
     }
 }

@@ -72,7 +72,7 @@ namespace Nomina.Models
         public string Role { get; set; }
 
         [Required(ErrorMessage = "El departamento es requerido")]
-        public int DeptNo { get; set; }
+        public string DeptNo { get; set; }
 
         [Required(ErrorMessage = "El salario es requerido")]
         [Range(1, long.MaxValue, ErrorMessage = "El salario debe ser mayor a 0")]
@@ -107,7 +107,7 @@ namespace Nomina.Models
 
     public class DepartmentItem
     {
-        public int    DeptNo   { get; set; }
+        public string DeptNo   { get; set; }
         public string DeptName { get; set; }
     }
 

@@ -31,7 +31,7 @@ namespace Nomina.Controllers
         }
 
         // GET: /Reportes/NominaVigente
-        public IActionResult NominaVigente(int? deptNo)
+        public IActionResult NominaVigente(string deptNo)
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
@@ -45,7 +45,7 @@ namespace Nomina.Controllers
                 using (SqlCommand cmd = new SqlCommand("sp_report_active_payroll", conn))
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@p_dept_no", deptNo.HasValue ? (object)deptNo.Value : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@p_dept_no", string.IsNullOrEmpty(deptNo) ? (object)DBNull.Value : deptNo);
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -137,7 +137,7 @@ namespace Nomina.Controllers
                     {
                         departamentos.Add(new DepartmentItem
                         {
-                            DeptNo   = reader.GetInt32(0),
+                            DeptNo   = reader.GetString(0),
                             DeptName = reader.GetString(1)
                         });
                     }
