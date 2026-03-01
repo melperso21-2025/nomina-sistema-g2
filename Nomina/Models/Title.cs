@@ -27,7 +27,7 @@ namespace Nomina.Models
         [Column("to_date")]
         public DateTime? ToDate { get; set; }
 
-        [ForeignKey("EmpNo")]
+        [ForeignKey("empNo")]
         public Employee Employee { get; set; }
     }
 }

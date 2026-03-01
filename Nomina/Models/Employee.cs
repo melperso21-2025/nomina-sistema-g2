@@ -15,6 +15,12 @@ namespace Nomina.Models
         [Column("birth_date")]
         public DateTime BirthDate { get; set; }
 
+
+        [Required]
+        [Column("ci")]
+        [StringLength(50)]
+        public string Ci { get; set; }
+
         [Required]
         [StringLength(14)]
         [Column("first_name")]
@@ -34,7 +40,7 @@ namespace Nomina.Models
         [Column("hire_date")]
         public DateTime HireDate { get; set; }
 
-        [Column("active")]
+        [Column("is_active")]
         public bool Activo { get; set; } = true;
 
         [StringLength(100)]

@@ -16,7 +16,7 @@ namespace Nomina.Models
         [Column("dept_name")]
         public string DeptName { get; set; }
 
-        [Column("active")]
+        [Column("is_active")]
         public bool Activo { get; set; } = true;
     }
 }

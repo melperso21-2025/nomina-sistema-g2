@@ -25,13 +25,10 @@ namespace Nomina.Models
         [Column("role")]
         public string Rol { get; set; }  // "Admin" o "RRHH"
 
-        [Column("active")]
-        public bool Activo { get; set; } = true;
-
         [Column("emp_no")]
         public int? EmpNo { get; set; }  // nullable: puede ser un usuario sin empleado
 
-        [ForeignKey("EmpNo")]
+        [ForeignKey("empNo")]
         public Employee Employee { get; set; }
     }
 }

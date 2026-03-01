@@ -27,7 +27,7 @@ namespace Nomina.Models
         public DateTime? ToDate { get; set; }
 
         // Navegación
-        [ForeignKey("EmpNo")]
+        [ForeignKey("empNo")]
         public Employee Employee { get; set; }
     }
 }

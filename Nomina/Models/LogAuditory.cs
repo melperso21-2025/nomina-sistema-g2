@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nomina.Models
 {
-    [Table("logauditori")]
+    [Table("salary_audit_log")]
     public class LogAuditory
     {
         [Key]
-        [Column("id_log")]
+        [Column("log_id")]
         public int IdLog { get; set; }
 
         [Column("emp_no")]
@@ -27,7 +27,11 @@ namespace Nomina.Models
         [Column("user_session")]
         public string UserResponsable { get; set; }
 
-        [ForeignKey("EmpNo")]
+        [Required]
+        [Column("action_date")]
+        public DateTime ActionDate { get; set; }
+
+        [ForeignKey("empNo")]
         public Employee Employee { get; set; }
     }
 }
