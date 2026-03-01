@@ -1,0 +1,72 @@
+﻿    @{
+    ViewData["Title"] = "Nuevo Empleado";
+}
+
+<h2 class="mb-4">Nuevo Empleado</h2>
+
+<form id="empleadoForm" method="post" asp-controller="Employees" asp-action="Create">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">CI</label>
+        <input type="text" name="ci" class="form-control" required maxlength="50" minlength="8" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" name="first_name" class="form-control" required maxlength="50" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Apellido</label>
+        <input type="text" name="last_name" class="form-control" required maxlength="50" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Correo</label>
+        <input type="email" name="correo" class="form-control" required maxlength="100" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Departamento</label>
+        <select name="departamento" class="form-select" required>
+            <option value="">Seleccione...</option>
+            <option value="Tecnología">Tecnología</option>
+            <option value="Recursos Humanos">Recursos Humanos</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Fecha de ingreso</label>
+        <input type="date" name="hire_date" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Género</label>
+        <select name="gender" class="form-select" required>
+            <option value="">Seleccione...</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a asp-controller="Employees" asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById('empleadoForm').addEventListener('submit', function (e) {
+            var correo = this.correo.value.trim();
+            var ci = this.ci.value.trim();
+            var errores = [];
+
+            if (!/^[^@@]+@@[^@@]+\.[a-zA-Z]{2,}$/.test(correo)) {
+                errores.push('El correo no es válido.');
+            }
+
+            if (ci.length < 8) {
+                errores.push('El CI debe tener al menos 8 caracteres.');
+            }
+
+            if (errores.length > 0) {
+                alert(errores.join('\n'));
+                e.preventDefault();
+            }
+        });
+    </script>
+}

@@ -2,7 +2,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// Habilitar Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -13,9 +12,15 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession(); // debe ir antes de UseAuthorization
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(

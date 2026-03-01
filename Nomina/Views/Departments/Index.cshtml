@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Departamentos";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="mb-0">🏢 Departamentos</h2>
+        <div class="text-muted small">Listado (datos de prueba)</div>
+    </div>
+    <a class="btn btn-dark" asp-controller="Departments" asp-action="Create">+ Nuevo departamento</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:100px;">Código</th>
+                        <th>Nombre</th>
+                        <th class="text-end" style="width:180px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>d001</td>
+                        <td>Tecnología</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary"
+                               asp-controller="Departments" asp-action="Edit" asp-route-id="d001">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" href="#">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>d002</td>
+                        <td>Recursos Humanos</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary"
+                               asp-controller="Departments" asp-action="Edit" asp-route-id="d002">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" href="#">Eliminar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>d003</td>
+                        <td>Finanzas</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary"
+                               asp-controller="Departments" asp-action="Edit" asp-route-id="d003">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" href="#">Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small p-3">Solo datos de prueba.</div>
+    </div>
+</div>

@@ -1,0 +1,109 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Nómina G2</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .login-card {
+            border: 0;
+            border-radius: 16px;
+        }
+
+        .brand-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 999px;
+            background: #2563eb;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center justify-content-center p-3">
+
+    <div class="card login-card shadow-lg" style="width: 420px;">
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-3">
+                <div class="brand-circle">💼</div>
+                <div class="fw-bold" style="color:#1a1a2e;">NÓMINA G2</div>
+                <div class="text-muted">Sign in</div>
+            </div>
+
+            @* Backend puede setear ViewBag.Error o TempData["Error"] *@
+            @if (ViewBag.Error != null)
+            {
+            <div class="alert alert-danger py-2" role="alert">
+                @ViewBag.Error
+            </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+            <div class="alert alert-danger py-2" role="alert">
+                @TempData["Error"]
+            </div>
+            }
+
+            <form id="loginForm" method="post" action="/Account/Login" novalidate>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input class="form-control" type="text" name="usuario" maxlength="100" required autocomplete="username" placeholder="jperez" />
+                    <div class="hint mt-1">Required. Max 100 chars.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input class="form-control" type="password" name="clave" minlength="4" required autocomplete="current-password" placeholder="••••" />
+                    <div class="hint mt-1">Required. Min 4 chars.</div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button class="btn btn-dark btn-lg" type="submit">Sign in</button>
+                    <a class="btn btn-outline-secondary" href="/Dashboard">Continue (demo)</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>(function () {
+            var form = document.getElementById('loginForm');
+            form.addEventListener('submit', function (e) {
+                var user = form.usuario.value.trim();
+                var pass = form.clave.value.trim();
+
+                if (!user || !pass) {
+                    alert('Username and password are required.');
+                    e.preventDefault();
+                    return;
+                }
+
+                if (pass.length < 4) {
+                    alert('Password must be at least 4 characters.');
+                    e.preventDefault();
+                    return;
+                }
+            });
+        })();</script>
+</body>
+</html>

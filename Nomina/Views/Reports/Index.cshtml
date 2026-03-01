@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+}
+
+<h2 class="mb-4">Reports</h2>
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">📊 Salary by department</h5>
+                <p class="card-text text-muted small">Average and total salary grouped by department.</p>
+                <a href="#" class="btn btn-outline-primary btn-sm">Generate</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">👤 Employees by department</h5>
+                <p class="card-text text-muted small">List of employees grouped by department.</p>
+                <a href="#" class="btn btn-outline-primary btn-sm">Generate</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">📋 Salary audit log</h5>
+                <p class="card-text text-muted small">Full history of salary changes.</p>
+                <a asp-controller="AuditSalaryLog" asp-action="Index" class="btn btn-outline-primary btn-sm">View</a>
+            </div>
+        </div>
+    </div>  
+</div>

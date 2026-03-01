@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["Title"] = "Detalle Empleado";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">👤 Detalle del Empleado</h2>
+    <div>
+        <a asp-controller="Employees" asp-action="Edit" asp-route-id="1"
+           class="btn btn-dark me-2">Editar</a>
+        <a asp-controller="Employees" asp-action="Index"
+           class="btn btn-outline-secondary">← Volver</a>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-semibold">Datos personales</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <div class="text-muted small text-uppercase">EMP_NO</div>
+                <div class="fw-bold">001</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">Nombre completo</div>
+                <div class="fw-bold">Ana Torres</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">CI</div>
+                <div>1720001234</div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-muted small text-uppercase">Género</div>
+                <div>Femenino</div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-muted small text-uppercase">Fecha ingreso</div>
+                <div>2023-01-15</div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Correo</div>
+                <div>ana.torres@@demo.com</div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Fecha nacimiento</div>
+                <div>1990-05-20</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-semibold">Departamento actual</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Departamento</div>
+                <div class="fw-bold">Tecnología</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">Desde</div>
+                <div>2023-01-15</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">Hasta</div>
+                <div><span class="badge bg-success">Activo</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-semibold">Salario vigente</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">Salario</div>
+                <div class="fw-bold text-success fs-5">$1,400</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">Desde</div>
+                <div>2024-01-01</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">Hasta</div>
+                <div><span class="badge bg-success">Activo</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white fw-semibold">Título / Cargo actual</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Título</div>
+                <div class="fw-bold">Senior Analyst</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">Desde</div>
+                <div>2023-01-15</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">Hasta</div>
+                <div><span class="badge bg-success">Activo</span></div>
+            </div>
+        </div>
+    </div>
+</div>
