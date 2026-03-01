@@ -1,6 +1,14 @@
+﻿
+using Nomina.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+// Registrar DbContext 
+builder.Services.AddDbContext<NominaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("NominaDB")));
 
 // Habilitar Session
 builder.Services.AddDistributedMemoryCache();
@@ -15,7 +23,7 @@ var app = builder.Build();
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession(); // debe ir antes de UseAuthorization
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
