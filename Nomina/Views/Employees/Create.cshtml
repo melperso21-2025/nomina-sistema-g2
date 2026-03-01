@@ -1,72 +1,112 @@
-﻿    @{
-    ViewData["Title"] = "Nuevo Empleado";
+﻿
+
+@model Nomina.Models.CreateEmployeeViewModel
+
+@{
+    ViewData["Title"] = "New Employee";
 }
 
-<h2 class="mb-4">Nuevo Empleado</h2>
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">👤 New Employee</h2>
+    <a asp-controller="Empleados" asp-action="Index" class="btn btn-outline-secondary">← Back</a>
+</div>
 
-<form id="empleadoForm" method="post" asp-controller="Employees" asp-action="Create">
-    @Html.AntiForgeryToken()
-
-    <div class="mb-3">
-        <label class="form-label">CI</label>
-        <input type="text" name="ci" class="form-control" required maxlength="50" minlength="8" />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Nombre</label>
-        <input type="text" name="first_name" class="form-control" required maxlength="50" />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Apellido</label>
-        <input type="text" name="last_name" class="form-control" required maxlength="50" />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Correo</label>
-        <input type="email" name="correo" class="form-control" required maxlength="100" />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Departamento</label>
-        <select name="departamento" class="form-select" required>
-            <option value="">Seleccione...</option>
-            <option value="Tecnología">Tecnología</option>
-            <option value="Recursos Humanos">Recursos Humanos</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Fecha de ingreso</label>
-        <input type="date" name="hire_date" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Género</label>
-        <select name="gender" class="form-select" required>
-            <option value="">Seleccione...</option>
-            <option value="M">Masculino</option>
-            <option value="F">Femenino</option>
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-success">Guardar</button>
-    <a asp-controller="Employees" asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
-
-@section Scripts {
-    <script>
-        document.getElementById('empleadoForm').addEventListener('submit', function (e) {
-            var correo = this.correo.value.trim();
-            var ci = this.ci.value.trim();
-            var errores = [];
-
-            if (!/^[^@@]+@@[^@@]+\.[a-zA-Z]{2,}$/.test(correo)) {
-                errores.push('El correo no es válido.');
-            }
-
-            if (ci.length < 8) {
-                errores.push('El CI debe tener al menos 8 caracteres.');
-            }
-
-            if (errores.length > 0) {
-                alert(errores.join('\n'));
-                e.preventDefault();
-            }
-        });
-    </script>
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">⚠️ @ViewBag.Error</div>
 }
+
+<div class="card shadow-sm" style="max-width:650px;">
+    <div class="card-body p-4">
+        <form method="post" asp-controller="Empleados" asp-action="Crear">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Emp #</label>
+                    <input type="number" name="EmpNo" class="form-control" required />
+                    <span asp-validation-for="EmpNo" class="text-danger small"></span>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> CI</label>
+                    <input type="text" name="Ci" class="form-control" required maxlength="50" />
+                    <span asp-validation-for="Ci" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> First name</label>
+                    <input type="text" name="FirstName" class="form-control" required maxlength="50" />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Last name</label>
+                    <input type="text" name="LastName" class="form-control" required maxlength="50" />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Birth date</label>
+                    <input type="date" name="BirthDate" class="form-control" required />
+                    <span asp-validation-for="BirthDate" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Hire date</label>
+                    <input type="date" name="HireDate" class="form-control" required />
+                    <span asp-validation-for="HireDate" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Gender</label>
+                    <select name="Gender" class="form-select" required>
+                        <option value="">Select...</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Email</label>
+                    <input type="email" name="Email" class="form-control" required maxlength="100" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Password</label>
+                    <input type="password" name="Password" class="form-control" required />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Role</label>
+                    <select name="Role" class="form-select" required>
+                        <option value="">Select...</option>
+                        <option value="Admin">Admin</option>
+                        <option value="RRHH">RRHH</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Department</label>
+                    <select name="DeptNo" class="form-select" required>
+                        <option value="">Select...</option>
+                        @foreach (var d in ViewBag.Departamentos as IEnumerable<Nomina.Models.DepartmentItem>)
+                        {
+                            <option value="@d.DeptNo">@d.DeptName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="DeptNo" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Initial salary</label>
+                    <input type="number" name="Salary" class="form-control" required min="1" />
+                    <span asp-validation-for="Salary" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><span class="text-danger">●</span> Title / Position</label>
+                    <input type="text" name="Title" class="form-control" required maxlength="50" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-dark px-4">Save</button>
+                <a asp-controller="Empleados" asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

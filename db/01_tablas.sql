@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿-- =============================================
+=======
+-- =============================================
+>>>>>>> develop
 -- 01_TABLAS.SQL
 -- Sistema de Nomina G2
 -- Todas las tablas en ingles, formato snake_case
@@ -142,4 +146,8 @@ CREATE TABLE salary_audit_log (
     CONSTRAINT fk_audit_log_employees
         FOREIGN KEY (emp_no) REFERENCES employees(emp_no)
 );
+<<<<<<< HEAD
 GO
+=======
+GO
+>>>>>>> develop

@@ -1,75 +1,59 @@
-﻿@{
-    ViewData["Title"] = "Editar Empleado";
+﻿@model Nomina.Models.EditEmployeeViewModel
+
+@{
+    ViewData["Title"] = "Edit Employee";
 }
 
 <div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="mb-0">✏️ Editar Empleado</h2>
-    <a asp-controller="Employees" asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
+    <h2 class="mb-0">✏️ Edit Employee</h2>
+    <a asp-controller="Empleados" asp-action="Detalle" asp-route-id="@Model.EmpNo"
+       class="btn btn-outline-secondary">← Back</a>
 </div>
 
-<div class="card shadow-sm" style="max-width:600px;">
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">⚠️ @ViewBag.Error</div>
+}
+
+<div class="card shadow-sm" style="max-width:560px;">
     <div class="card-body p-4">
-        <form id="empleadoEditForm" method="post" asp-controller="Employees" asp-action="Edit">
+        <form method="post" asp-controller="Empleados" asp-action="Editar">
             @Html.AntiForgeryToken()
+            <input type="hidden" name="EmpNo" value="@Model.EmpNo" />
 
             <div class="mb-3">
-                <label class="form-label fw-semibold">CI</label>
-                <input type="text" name="ci" class="form-control"
-                       required maxlength="50" minlength="8" value="0102030405" />
+                <label class="form-label fw-semibold"><span class="text-danger">●</span> First name</label>
+                <input type="text" name="FirstName" value="@Model.FirstName"
+                       class="form-control" required maxlength="50" />
             </div>
             <div class="mb-3">
-                <label class="form-label fw-semibold">
-                    <span class="text-danger">●</span> Nombre
-                </label>
-                <input type="text" name="first_name" class="form-control"
-                       required maxlength="50" value="Ana" />
+                <label class="form-label fw-semibold"><span class="text-danger">●</span> Last name</label>
+                <input type="text" name="LastName" value="@Model.LastName"
+                       class="form-control" required maxlength="50" />
             </div>
             <div class="mb-3">
-                <label class="form-label fw-semibold">
-                    <span class="text-danger">●</span> Apellido
-                </label>
-                <input type="text" name="last_name" class="form-control"
-                       required maxlength="50" value="Torres" />
+                <label class="form-label fw-semibold"><span class="text-danger">●</span> Birth date</label>
+                <input type="date" name="BirthDate" value="@Model.BirthDate.ToString("yyyy-MM-dd")"
+                       class="form-control" required />
             </div>
             <div class="mb-3">
-                <label class="form-label fw-semibold">
-                    <span class="text-danger">●</span> Correo
-                </label>
-                <input type="email" name="correo" class="form-control"
-                       required maxlength="100" value="ana.torres@demo.com" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">
-                    <span class="text-danger">●</span> Departamento
-                </label>
-                <select name="departamento" class="form-select" required>
-                    <option value="">Seleccione...</option>
-                    <option value="Tecnología" selected>Tecnología</option>
-                    <option value="Recursos Humanos">Recursos Humanos</option>
+                <label class="form-label fw-semibold"><span class="text-danger">●</span> Gender</label>
+                <select name="Gender" class="form-select" required>
+                    <option value="">Select...</option>
+                    <option value="M" @(Model.Gender == "M" ? "selected" : "")>Male</option>
+                    <option value="F" @(Model.Gender == "F" ? "selected" : "")>Female</option>
                 </select>
             </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">
-                    <span class="text-danger">●</span> Fecha de ingreso
-                </label>
-                <input type="date" name="hire_date" class="form-control"
-                       required value="2023-01-15" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">
-                    <span class="text-danger">●</span> Género
-                </label>
-                <select name="gender" class="form-select" required>
-                    <option value="">Seleccione...</option>
-                    <option value="M">Masculino</option>
-                    <option value="F" selected>Femenino</option>
-                </select>
+            <div class="mb-4">
+                <label class="form-label fw-semibold"><span class="text-danger">●</span> Email</label>
+                <input type="email" name="Email" value="@Model.Email"
+                       class="form-control" required maxlength="100" />
             </div>
 
             <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-dark px-4">Guardar cambios</button>
-                <a asp-controller="Employees" asp-action="Index"
-                   class="btn btn-outline-secondary px-4">Cancelar</a>
+                <button type="submit" class="btn btn-dark px-4">Save changes</button>
+                <a asp-controller="Empleados" asp-action="Detalle" asp-route-id="@Model.EmpNo"
+                   class="btn btn-outline-secondary px-4">Cancel</a>
             </div>
         </form>
     </div>
@@ -77,16 +61,13 @@
 
 @section Scripts {
     <script>
+        document.getElementById('empleadoEditForm') &&
         document.getElementById('empleadoEditForm').addEventListener('submit', function (e) {
-            var correo = this.correo.value.trim();
-            var ci = this.ci.value.trim();
+            var email = document.querySelector('[name="Email"]').value.trim();
             var errores = [];
 
-            if (!/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(correo))
-                errores.push('El correo no es válido.');
-
-            if (ci.length < 8)
-                errores.push('El CI debe tener al menos 8 caracteres.');
+            if (!/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(email))
+                errores.push('Email is not valid.');
 
             if (errores.length > 0) {
                 alert(errores.join('\n'));

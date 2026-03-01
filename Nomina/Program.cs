@@ -1,7 +1,19 @@
+﻿
+using Nomina.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+<<<<<<< HEAD
+=======
+// Registrar DbContext 
+builder.Services.AddDbContext<NominaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("NominaDB")));
+
+// Habilitar Session
+>>>>>>> develop
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {

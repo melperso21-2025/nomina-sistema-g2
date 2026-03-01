@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Nomina.Models.DashboardViewModel
+
+@{
     ViewData["Title"] = "Dashboard";
 }
 
@@ -9,7 +11,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title mb-1">EMPLOYEES</h6>
-                        <h2 class="mb-0 fw-bold">142</h2>
+                        <h2 class="mb-0 fw-bold">@Model.TotalEmpleados</h2>
                     </div>
                     <div><span class="fs-2">👤</span></div>
                 </div>
@@ -22,7 +24,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title mb-1">DEPARTMENTS</h6>
-                        <h2 class="mb-0 fw-bold">8</h2>
+                        <h2 class="mb-0 fw-bold">@Model.TotalDepartamentos</h2>
                     </div>
                     <div><span class="fs-2">🏢</span></div>
                 </div>
@@ -35,7 +37,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title mb-1">AVG SALARY</h6>
-                        <h2 class="mb-0 fw-bold">$1,240</h2>
+                        <h2 class="mb-0 fw-bold">@Model.SalarioPromedio.ToString("C")</h2>
                     </div>
                     <div><span class="fs-2">💰</span></div>
                 </div>
@@ -44,38 +46,35 @@
     </div>
 </div>
 
-<div class="card shadow-sm mb-4">
+<div class="card shadow-sm">
     <div class="card-header bg-white">
         <h5 class="mb-0 fw-semibold">Latest salary changes</h5>
     </div>
-    <div class="card-body">
+    <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
                         <th>Employee</th>
-                        <th>Change</th>
-                        <th>Date</th>
+                        <th>Previous</th>
+                        <th>New salary</th>
+                        <th style="width:160px;">Date</th>
+                        <th>User</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Ana Torres</td>
-                        <td><span class="text-success fw-semibold">+$200 → $1,400</span></td>
-                        <td><small class="text-muted">today</small></td>
-                    </tr>
-                    <tr>
-                        <td>Carlos Ruiz</td>
-                        <td><span class="text-success fw-semibold">+$150 → $1,150</span></td>
-                        <td><small class="text-muted">yesterday</small></td>
-                    </tr>
-                    <tr>
-                        <td>María León</td>
-                        <td><span class="text-success fw-semibold">+$300 → $2,100</span></td>
-                        <td><small class="text-muted">2 days ago</small></td>
-                    </tr>
+                    @foreach (var c in Model.UltimosCambios)
+                    {
+                        <tr>
+                            <td>@c.FullName</td>
+                            <td class="text-muted">@c.PreviousSalary.ToString("C")</td>
+                            <td class="text-success fw-semibold">@c.NewSalary.ToString("C")</td>
+                            <td><small class="text-muted">@c.ActionDate.ToString("yyyy-MM-dd")</small></td>
+                            <td><small>@c.UserSession</small></td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
     </div>
-</div>
+</div>  

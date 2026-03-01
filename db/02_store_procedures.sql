@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 ﻿
+=======
+>>>>>>> develop
 -- =============================================
 -- 02_STORE_PROCEDURES.SQL
 -- Sistema de Nomina G2
