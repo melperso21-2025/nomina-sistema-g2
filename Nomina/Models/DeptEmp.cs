@@ -27,10 +27,10 @@ namespace Nomina.Models
         [Column("to_date")]
         public DateTime? ToDate { get; set; }
 
-        [ForeignKey("empNo")]
+        [ForeignKey("EmpNo")]
         public Employee Employee { get; set; }
 
-        [ForeignKey("deptNo")]
+        [ForeignKey("DeptNo")]
         public Department Department { get; set; }
     }
 }

@@ -40,8 +40,9 @@ namespace Nomina.Models
         [Column("hire_date")]
         public DateTime HireDate { get; set; }
 
+        // Column remains 'is_active' in DB, property renamed to IsActive
         [Column("is_active")]
-        public bool Activo { get; set; } = true;
+        public bool IsActive { get; set; } = true;
 
         [StringLength(100)]
         [Column("email")]
