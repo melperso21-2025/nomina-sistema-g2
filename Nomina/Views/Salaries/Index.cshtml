@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Nomina.Models.SalaryListItem>
+@model IEnumerable<Nomina.Models.SalaryListItem>
 @using System.Globalization
 
 @{
@@ -8,7 +8,7 @@
 
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
-        <h2 class="mb-0">💰 Salarios</h2>
+        <h2 class="mb-0">?? Salarios</h2>
         <div class="text-muted small">Salarios activos vigentes</div>
     </div>
     @if (Context.Session.GetString("rol") == "Admin")
@@ -23,12 +23,12 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th style="width:80px;">N° Emp</th>
+                        <th style="width:80px;">N� Emp</th>
                         <th>Empleado</th>
                         <th>Salario</th>
                         <th style="width:130px;">Desde</th>
                         <th style="width:100px;">Estado</th>
-                        <th class="text-end" style="width:100px;">Acciones</th>
+                        <th class="text-end" style="width:150px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,16 +49,18 @@
                                     @s.ToDate.Value.ToString("dd/MM/yyyy")
                                 }
                             </td>
-                            <td class="text-end">
-                                <a class="btn btn-sm btn-outline-secondary"
-                                   asp-controller="Salaries" asp-action="Details"
-                                   asp-route-id="@s.IdSalario">Ver</a>
-                                @if (Context.Session.GetString("rol") == "Admin")
-                                {
-                                    <a class="btn btn-sm btn-dark"
-                                       asp-controller="Salaries" asp-action="Edit"
-                                       asp-route-id="@s.IdSalario">Editar</a>
-                                }
+                            <td>
+                                <div class="d-flex gap-1 justify-content-end">
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       asp-controller="Salaries" asp-action="Details"
+                                       asp-route-id="@s.IdSalario">Ver</a>
+                                    @if (Context.Session.GetString("rol") == "Admin")
+                                    {
+                                        <a class="btn btn-sm btn-dark"
+                                           asp-controller="Salaries" asp-action="Edit"
+                                           asp-route-id="@s.IdSalario">Editar</a>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     }
@@ -68,3 +70,4 @@
         <div class="text-muted small p-3">Empleados activos: @(Model?.Count() ?? 0)</div>
     </div>
 </div>
+
