@@ -29,7 +29,7 @@ namespace Nomina.Controllers
             {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand(
-                    "SELECT TOP 100 emp_no, action_date, previus_salary, new_salary, user_session " +
+                    "SELECT TOP 100 emp_no, action_date, previous_salary, new_salary, user_session " +
                     "FROM salary_audit_log ORDER BY action_date DESC", conn))
                 {
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -40,8 +40,8 @@ namespace Nomina.Controllers
                             {
                                 EmpNo            = reader.GetInt32(0),
                                 ActionDate       = reader.GetDateTime(1),
-                                SalarioAnterior  = reader.IsDBNull(2) ? null : (decimal?)reader.GetDecimal(2),
-                                SalarioNuevo     = reader.GetDecimal(3),
+                                SalarioAnterior  = reader.IsDBNull(2) ? null : Convert.ToDecimal(reader.GetValue(2)),
+                                SalarioNuevo     = Convert.ToDecimal(reader.GetValue(3)),
                                 UserResponsable  = reader.IsDBNull(4) ? string.Empty : reader.GetString(4)
                             });
                         }
