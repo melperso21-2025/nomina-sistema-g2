@@ -1,0 +1,69 @@
+@model Nomina.Models.Department
+
+@{
+    ViewData["Title"] = "Detalle del Departamento";
+}
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Exito"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">🏢 Detalle del Departamento</h2>
+    <div class="d-flex gap-2">
+        <a asp-controller="Departments" asp-action="Editar" asp-route-id="@Model.DeptNo"
+           class="btn btn-dark">Editar</a>
+        <a asp-controller="Departments" asp-action="Index"
+           class="btn btn-outline-secondary">← Regresar a la lista</a>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4" style="max-width:520px;">
+    <div class="card-header bg-white fw-semibold">Información del departamento</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Código</div>
+                <div class="fw-bold">@Model.DeptNo</div>
+            </div>
+            <div class="col-md-8">
+                <div class="text-muted small text-uppercase">Nombre</div>
+                <div class="fw-bold">@Model.DeptName</div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Estado</div>
+                <div>
+                    @if (Model.IsActive)
+                    { <span class="badge bg-success">Activo</span> }
+                    else
+                    { <span class="badge bg-danger">Inactivo</span> }
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="text-muted small text-uppercase">Empleados activos asignados</div>
+                <div class="fw-bold">@ViewBag.EmpleadosActivos</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.IsActive)
+{
+    <form method="post" asp-controller="Departments" asp-action="Desactivar"
+          asp-route-id="@Model.DeptNo"
+          onsubmit="return confirm('¿Está seguro de que desea desactivar este departamento?')">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-danger">Desactivar departamento</button>
+    </form>
+}
