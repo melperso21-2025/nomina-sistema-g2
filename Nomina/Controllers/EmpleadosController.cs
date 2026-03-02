@@ -370,7 +370,7 @@ namespace Nomina.Controllers
 
         // POST: /Empleados/AsignarDepartamento
         [HttpPost]
-        public IActionResult AsignarDepartamento(int empNo, int deptNo, DateTime fromDate, DateTime? toDate)
+        public IActionResult AsignarDepartamento(int empNo, string deptNo, DateTime fromDate, DateTime? toDate)
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
@@ -385,7 +385,7 @@ namespace Nomina.Controllers
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@p_emp_no",    empNo);
-                    cmd.Parameters.AddWithValue("@p_dept_no",   deptNo);
+                    cmd.Parameters.AddWithValue("@p_dept_no",   string.IsNullOrEmpty(deptNo) ? (object)DBNull.Value : deptNo);
                     cmd.Parameters.AddWithValue("@p_from_date", fromDate);
                     cmd.Parameters.AddWithValue("@p_to_date",   toDate.HasValue ? (object)toDate.Value : DBNull.Value);
 
@@ -450,7 +450,7 @@ namespace Nomina.Controllers
 
         // POST: /Empleados/AsignarManager
         [HttpPost]
-        public IActionResult AsignarManager(int empNo, int deptNo, DateTime fromDate, DateTime? toDate)
+        public IActionResult AsignarManager(int empNo, string deptNo, DateTime fromDate, DateTime? toDate)
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
@@ -465,7 +465,7 @@ namespace Nomina.Controllers
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@p_emp_no",    empNo);
-                    cmd.Parameters.AddWithValue("@p_dept_no",   deptNo);
+                    cmd.Parameters.AddWithValue("@p_dept_no",   string.IsNullOrEmpty(deptNo) ? (object)DBNull.Value : deptNo);
                     cmd.Parameters.AddWithValue("@p_from_date", fromDate);
                     cmd.Parameters.AddWithValue("@p_to_date",   toDate.HasValue ? (object)toDate.Value : DBNull.Value);
 
@@ -503,7 +503,7 @@ namespace Nomina.Controllers
                     {
                         departamentos.Add(new DepartmentItem
                         {
-                            DeptNo   = reader.GetInt32(0),
+                            DeptNo   = reader.GetString(0),
                             DeptName = reader.GetString(1)
                         });
                     }
