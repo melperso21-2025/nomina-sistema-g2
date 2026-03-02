@@ -36,48 +36,57 @@ namespace Nomina.Controllers
             }
 
             // Generar hash SHA256 de la contraseña
-            byte[] passwordHash = SHA256.HashData(Encoding.UTF8.GetBytes(password));
-
-            string connStr = _config.GetConnectionString("NominaDB");
+            byte[] passwordHashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
+            string connStr = _config.GetConnectionString("NominaDB") ?? "";
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
-                conn.Open();
-                using (SqlCommand cmd = new SqlCommand("sp_login", conn))
+                try
                 {
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                    cmd.Parameters.AddWithValue("@p_username", username);
-                    cmd.Parameters.AddWithValue("@p_password_hash", passwordHash);
-
-                    SqlParameter pResult   = new SqlParameter("@r_result",    System.Data.SqlDbType.Int)          { Direction = System.Data.ParameterDirection.Output };
-                    SqlParameter pRole     = new SqlParameter("@r_role",      System.Data.SqlDbType.VarChar, 50)  { Direction = System.Data.ParameterDirection.Output };
-                    SqlParameter pEmpNo    = new SqlParameter("@r_emp_no",    System.Data.SqlDbType.Int)          { Direction = System.Data.ParameterDirection.Output };
-                    SqlParameter pFullName = new SqlParameter("@r_full_name", System.Data.SqlDbType.VarChar, 100) { Direction = System.Data.ParameterDirection.Output };
-
-                    cmd.Parameters.Add(pResult);
-                    cmd.Parameters.Add(pRole);
-                    cmd.Parameters.Add(pEmpNo);
-                    cmd.Parameters.Add(pFullName);
-
-                    cmd.ExecuteNonQuery();
-
-                    int result = (int)pResult.Value;
-
-                    if (result == 1)
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("sp_login", conn))
                     {
-                        // Guardar datos en Session
-                        HttpContext.Session.SetString("usuario",   pFullName.Value.ToString());
-                        HttpContext.Session.SetString("rol",       pRole.Value.ToString());
-                        HttpContext.Session.SetInt32("emp_no",     (int)pEmpNo.Value);
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@p_username", username);
+                        
+                        SqlParameter pPasswordHash = new SqlParameter("@p_password_hash", System.Data.SqlDbType.VarBinary);
+                        pPasswordHash.Value = passwordHashBytes;
+                        cmd.Parameters.Add(pPasswordHash);
 
-                        return RedirectToAction("Index", "Dashboard");
+                        SqlParameter pResult = new SqlParameter("@r_result", System.Data.SqlDbType.Int) { Direction = System.Data.ParameterDirection.Output };
+                        SqlParameter pRole = new SqlParameter("@r_role", System.Data.SqlDbType.VarChar, 50) { Direction = System.Data.ParameterDirection.Output };
+                        SqlParameter pEmpNo = new SqlParameter("@r_emp_no", System.Data.SqlDbType.Int) { Direction = System.Data.ParameterDirection.Output };
+                        SqlParameter pFullName = new SqlParameter("@r_full_name", System.Data.SqlDbType.VarChar, 100) { Direction = System.Data.ParameterDirection.Output };
+
+                        cmd.Parameters.Add(pResult);
+                        cmd.Parameters.Add(pRole);
+                        cmd.Parameters.Add(pEmpNo);
+                        cmd.Parameters.Add(pFullName);
+
+                        cmd.ExecuteNonQuery();
+
+                        int result = (int?)pResult.Value ?? 0;
+
+                        if (result == 1)
+                        {
+                            // Guardar datos en Session
+                            HttpContext.Session.SetString("usuario", pFullName.Value?.ToString() ?? "");
+                            HttpContext.Session.SetString("rol", pRole.Value?.ToString() ?? "");
+                            HttpContext.Session.SetInt32("emp_no", (int?)pEmpNo.Value ?? 0);
+
+                            return RedirectToAction("Index", "Dashboard");
+                        }
+                        else
+                        {
+                            ViewBag.Error = "Usuario o contraseña incorrectos.";
+                            return View();
+                        }
                     }
-                    else
-                    {
-                        ViewBag.Error = "Usuario o contraseña incorrectos.";
-                        return View();
-                    }
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = $"Error al conectar: {ex.Message}";
+                    return View();
                 }
             }
         }
