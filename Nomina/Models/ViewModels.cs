@@ -139,7 +139,7 @@ namespace Nomina.Models
         public string   FullName    { get; set; }
         public string   Ci          { get; set; }
         public string   Title       { get; set; }
-        public long     Salary      { get; set; }
+        public decimal  Salary      { get; set; }
         public DateTime SalarySince { get; set; }
     }
 
@@ -150,8 +150,8 @@ namespace Nomina.Models
         public string   UserSession    { get; set; }
         public string   FullName       { get; set; }
         public string   Ci             { get; set; }
-        public long     PreviousSalary { get; set; }
-        public long     NewSalary      { get; set; }
+        public decimal  PreviousSalary { get; set; }
+        public decimal  NewSalary      { get; set; }
         public DateTime FromDate       { get; set; }
     }
 

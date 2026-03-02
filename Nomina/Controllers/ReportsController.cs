@@ -58,7 +58,7 @@ namespace Nomina.Controllers
                                 FullName    = reader.GetString(2),
                                 Ci          = reader.GetString(3),
                                 Title       = reader.IsDBNull(4) ? "Sin cargo" : reader.GetString(4),
-                                Salary      = reader.GetInt64(5),
+                                Salary      = Convert.ToDecimal(reader.GetValue(5)),
                                 SalarySince = reader.GetDateTime(6)
                             });
                         }
@@ -103,8 +103,8 @@ namespace Nomina.Controllers
                                 UserSession    = reader.GetString(2),
                                 FullName       = reader.GetString(3),
                                 Ci             = reader.GetString(4),
-                                PreviousSalary = reader.IsDBNull(5) ? 0 : reader.GetInt64(5),
-                                NewSalary      = reader.GetInt64(6),
+                                PreviousSalary = reader.IsDBNull(5) ? 0m : Convert.ToDecimal(reader.GetValue(5)),
+                                NewSalary      = Convert.ToDecimal(reader.GetValue(6)),
                                 FromDate       = reader.GetDateTime(7)
                             });
                         }
@@ -137,7 +137,7 @@ namespace Nomina.Controllers
                     {
                         departamentos.Add(new DepartmentItem
                         {
-                            DeptNo   = reader.GetString(0),
+                            DeptNo = reader.GetValue(0).ToString(),
                             DeptName = reader.GetString(1)
                         });
                     }
