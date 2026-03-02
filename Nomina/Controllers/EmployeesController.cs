@@ -221,6 +221,7 @@ namespace Nomina.Controllers
                     string message = pMessage.Value.ToString();
                     if (message.StartsWith("SUCCESS"))
                     {
+                        RegistrarActividad("Employees", "CREATE", $"Empleado creado: emp_no={model.EmpNo}, CI={model.Ci}");
                         TempData["Exito"] = "Empleado registrado correctamente.";
                         return RedirectToAction("Index");
                     }
@@ -365,7 +366,10 @@ namespace Nomina.Controllers
 
                     string message = pMessage.Value.ToString();
                     if (message.StartsWith("SUCCESS"))
+                    {
+                        RegistrarActividad("Employees", "DEACTIVATE", $"Empleado desactivado: emp_no={id}");
                         TempData["Exito"] = "Empleado desactivado correctamente.";
+                    }
                     else
                         TempData["Error"] = message.Replace("ERROR: ", "");
                 }
@@ -408,7 +412,10 @@ namespace Nomina.Controllers
 
                     string message = pMessage.Value.ToString();
                     if (message.StartsWith("SUCCESS"))
+                    {
+                        RegistrarActividad("Salaries", "UPDATE", $"Salario actualizado: emp_no={empNo}, monto={salary}");
                         TempData["Exito"] = "Salario actualizado correctamente.";
+                    }
                     else
                         TempData["Error"] = message.Replace("ERROR: ", "");
                 }
@@ -425,6 +432,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (toDate.HasValue && toDate.Value < fromDate)
+            {
+                TempData["Error"] = "La fecha de fin no puede ser anterior a la fecha de inicio.";
+                return RedirectToAction("Detalle", new { id = empNo });
+            }
 
             string connStr = _config.GetConnectionString("NominaDB");
 
@@ -466,6 +479,12 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (toDate.HasValue && toDate.Value < fromDate)
+            {
+                TempData["Error"] = "La fecha de fin no puede ser anterior a la fecha de inicio.";
+                return RedirectToAction("Detalle", new { id = empNo });
+            }
+
             string connStr = _config.GetConnectionString("NominaDB");
 
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -506,6 +525,12 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (toDate.HasValue && toDate.Value < fromDate)
+            {
+                TempData["Error"] = "La fecha de fin no puede ser anterior a la fecha de inicio.";
+                return RedirectToAction("Detalle", new { id = empNo });
+            }
+
             string connStr = _config.GetConnectionString("NominaDB");
 
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -538,6 +563,25 @@ namespace Nomina.Controllers
         }
 
         // ─── HELPERS ────────────────────────────────────────────
+
+        private void RegistrarActividad(string module, string action, string description = null)
+        {
+            try
+            {
+                string user    = HttpContext.Session.GetString("usuario") ?? "sistema";
+                string connStr = _config.GetConnectionString("NominaDB");
+                using SqlConnection conn = new SqlConnection(connStr);
+                conn.Open();
+                using SqlCommand cmd = new SqlCommand(
+                    "INSERT INTO activity_log (user_session, module, action, description) VALUES (@u, @m, @a, @d)", conn);
+                cmd.Parameters.AddWithValue("@u", user);
+                cmd.Parameters.AddWithValue("@m", module);
+                cmd.Parameters.AddWithValue("@a", action);
+                cmd.Parameters.AddWithValue("@d", (object)description ?? DBNull.Value);
+                cmd.ExecuteNonQuery();
+            }
+            catch { /* No bloquear flujo principal */ }
+        }
 
         private void CargarDepartamentos()
         {

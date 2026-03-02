@@ -178,4 +178,25 @@ namespace Nomina.Models
         public DateTime  FromDate  { get; set; }
         public DateTime? ToDate    { get; set; }
     }
+
+    // ─── REPORTES — ESTRUCTURA ORGANIZACIONAL ───────────────────
+
+    public class OrgChartItem
+    {
+        public string DeptName      { get; set; }
+        public string ManagerName   { get; set; }
+        public int    EmployeeCount { get; set; }
+    }
+
+    // ─── LOG DE ACTIVIDAD ────────────────────────────────────────
+
+    public class ActivityLogItem
+    {
+        public int      LogId       { get; set; }
+        public DateTime ActionDate  { get; set; }
+        public string   UserSession { get; set; }
+        public string   Module      { get; set; }
+        public string   Action      { get; set; }
+        public string   Description { get; set; }
+    }
 }

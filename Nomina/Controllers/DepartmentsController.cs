@@ -177,6 +177,7 @@ namespace Nomina.Controllers
                     string msg = pMsg.Value?.ToString() ?? string.Empty;
                     if (msg.StartsWith("SUCCESS"))
                     {
+                        RegistrarActividad("Departments", "CREATE", $"Departamento creado: {dept_no} - {dept_name}");
                         TempData["Exito"] = "Departamento creado correctamente.";
                         return RedirectToAction("Index");
                     }
@@ -270,6 +271,7 @@ namespace Nomina.Controllers
                     string msg = pMsg.Value?.ToString() ?? string.Empty;
                     if (msg.StartsWith("SUCCESS"))
                     {
+                        RegistrarActividad("Departments", "UPDATE", $"Departamento actualizado: {dept_no} - {dept_name}");
                         TempData["Exito"] = "Departamento actualizado correctamente.";
                         return RedirectToAction("Index");
                     }
@@ -306,8 +308,28 @@ namespace Nomina.Controllers
                 }
             }
 
+            RegistrarActividad("Departments", "DEACTIVATE", $"Departamento desactivado: {id}");
             TempData["Exito"] = "Departamento desactivado correctamente.";
             return RedirectToAction("Index");
+        }
+
+        private void RegistrarActividad(string module, string action, string description = null)
+        {
+            try
+            {
+                string user    = HttpContext.Session.GetString("usuario") ?? "sistema";
+                string connStr = _config.GetConnectionString("NominaDB");
+                using SqlConnection conn = new SqlConnection(connStr);
+                conn.Open();
+                using SqlCommand cmd = new SqlCommand(
+                    "INSERT INTO activity_log (user_session, module, action, description) VALUES (@u, @m, @a, @d)", conn);
+                cmd.Parameters.AddWithValue("@u", user);
+                cmd.Parameters.AddWithValue("@m", module);
+                cmd.Parameters.AddWithValue("@a", action);
+                cmd.Parameters.AddWithValue("@d", (object)description ?? DBNull.Value);
+                cmd.ExecuteNonQuery();
+            }
+            catch { /* No bloquear flujo principal */ }
         }
     }
 }

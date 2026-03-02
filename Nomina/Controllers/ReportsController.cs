@@ -140,6 +140,56 @@ namespace Nomina.Controllers
 
         // ─── HELPERS ────────────────────────────────────────────
 
+        // GET: /Reportes/EstructuraOrganizacional
+        public IActionResult EstructuraOrganizacional()
+        {
+            if (!VerificarSesion())
+                return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Información confidencial.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var resultados = new List<OrgChartItem>();
+            string connStr = _config.GetConnectionString("NominaDB");
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                string sql = @"
+                    SELECT d.dept_name,
+                           ISNULL(mgr.first_name + ' ' + mgr.last_name, 'Sin gerente') AS manager_name,
+                           COUNT(de.emp_no) AS employee_count
+                    FROM departments d
+                    LEFT JOIN dept_manager dm  ON d.dept_no = dm.dept_no  AND dm.to_date IS NULL
+                    LEFT JOIN employees   mgr  ON dm.emp_no = mgr.emp_no
+                    LEFT JOIN dept_emp    de   ON d.dept_no = de.dept_no  AND de.to_date IS NULL
+                    WHERE d.is_active = 1
+                    GROUP BY d.dept_name, mgr.first_name, mgr.last_name
+                    ORDER BY d.dept_name";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        resultados.Add(new OrgChartItem
+                        {
+                            DeptName      = reader.GetString(0),
+                            ManagerName   = reader.GetString(1),
+                            EmployeeCount = Convert.ToInt32(reader.GetValue(2))
+                        });
+                    }
+                }
+            }
+
+            ViewBag.Usuario = HttpContext.Session.GetString("usuario");
+            ViewBag.Rol     = HttpContext.Session.GetString("rol");
+            return View(resultados);
+        }
+
         private void CargarDepartamentos()
         {
             var departamentos = new List<DepartmentItem>();

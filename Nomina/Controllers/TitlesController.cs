@@ -127,6 +127,13 @@ namespace Nomina.Controllers
                 return View();
             }
 
+            if (toDate.HasValue && toDate.Value < fromDate)
+            {
+                ViewBag.Error = "La fecha de fin no puede ser anterior a la fecha de inicio.";
+                CargarEmpleados();
+                return View();
+            }
+
             string connStr = _config.GetConnectionString("NominaDB");
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -149,6 +156,7 @@ namespace Nomina.Controllers
                     string msg = pMsg.Value?.ToString() ?? string.Empty;
                     if (msg.StartsWith("SUCCESS"))
                     {
+                        RegistrarActividad("Titles", "CREATE", $"Cargo asignado: emp_no={empNo}, cargo={title}");
                         TempData["Exito"] = "Cargo asignado correctamente.";
                         return RedirectToAction("Index");
                     }
@@ -159,8 +167,6 @@ namespace Nomina.Controllers
                 }
             }
         }
-
-        // ─── HELPERS ────────────────────────────────────────────────────
 
         // GET: /Titles/Details/1013
         public IActionResult Details(int id)
@@ -322,10 +328,30 @@ namespace Nomina.Controllers
             }
 
             TempData["Exito"] = "Cargo actualizado correctamente.";
+            RegistrarActividad("Titles", "UPDATE", $"Cargo actualizado: emp_no={empNo}, nuevo cargo={newTitle}");
             return RedirectToAction("Details", new { id = empNo });
         }
 
         // ─── HELPERS ────────────────────────────────────────────────────
+
+        private void RegistrarActividad(string module, string action, string description = null)
+        {
+            try
+            {
+                string user    = HttpContext.Session.GetString("usuario") ?? "sistema";
+                string connStr = _config.GetConnectionString("NominaDB");
+                using SqlConnection conn = new SqlConnection(connStr);
+                conn.Open();
+                using SqlCommand cmd = new SqlCommand(
+                    "INSERT INTO activity_log (user_session, module, action, description) VALUES (@u, @m, @a, @d)", conn);
+                cmd.Parameters.AddWithValue("@u", user);
+                cmd.Parameters.AddWithValue("@m", module);
+                cmd.Parameters.AddWithValue("@a", action);
+                cmd.Parameters.AddWithValue("@d", (object)description ?? DBNull.Value);
+                cmd.ExecuteNonQuery();
+            }
+            catch { /* No bloquear flujo principal */ }
+        }
 
         private void CargarEmpleados()
         {

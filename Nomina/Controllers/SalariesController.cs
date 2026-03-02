@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Nomina.Models;
 
@@ -126,6 +126,7 @@ namespace Nomina.Controllers
                     string msg = pMsg.Value?.ToString() ?? string.Empty;
                     if (msg.StartsWith("SUCCESS"))
                     {
+                        RegistrarActividad("Salaries", "UPDATE", $"Salario actualizado: emp_no={emp_no}, monto={salary}");
                         TempData["Exito"] = "Salario actualizado correctamente.";
                         return RedirectToAction("Index");
                     }
@@ -189,6 +190,7 @@ namespace Nomina.Controllers
                     string msg = pMsg.Value?.ToString() ?? string.Empty;
                     if (msg.StartsWith("SUCCESS"))
                     {
+                        RegistrarActividad("Salaries", "CREATE", $"Salario creado: emp_no={emp_no}, monto={salary}");
                         TempData["Exito"] = "Salario registrado correctamente.";
                         return RedirectToAction("Index");
                     }
@@ -200,6 +202,25 @@ namespace Nomina.Controllers
         }
 
         // ─── HELPERS ────────────────────────────────────────────────────
+
+        private void RegistrarActividad(string module, string action, string description = null)
+        {
+            try
+            {
+                string user    = HttpContext.Session.GetString("usuario") ?? "sistema";
+                string connStr = _config.GetConnectionString("NominaDB");
+                using SqlConnection conn = new SqlConnection(connStr);
+                conn.Open();
+                using SqlCommand cmd = new SqlCommand(
+                    "INSERT INTO activity_log (user_session, module, action, description) VALUES (@u, @m, @a, @d)", conn);
+                cmd.Parameters.AddWithValue("@u", user);
+                cmd.Parameters.AddWithValue("@m", module);
+                cmd.Parameters.AddWithValue("@a", action);
+                cmd.Parameters.AddWithValue("@d", (object)description ?? DBNull.Value);
+                cmd.ExecuteNonQuery();
+            }
+            catch { /* No bloquear flujo principal */ }
+        }
 
         private SalaryListItem? CargarSalario(int id)
         {

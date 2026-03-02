@@ -183,6 +183,10 @@
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
                  👤 Usuarios
             </a>
+            <a asp-controller="ActivityLog" asp-action="Index"
+               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "ActivityLog" ? "active" : "")">
+                 📋 Log de Actividad
+            </a>
             }
         </nav>
         <div class="user-box">
