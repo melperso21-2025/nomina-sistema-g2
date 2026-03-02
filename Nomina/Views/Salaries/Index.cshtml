@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Nomina.Models.SalaryListItem>
+
+@{
+    ViewData["Title"] = "Salarios";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="mb-0">💰 Salarios</h2>
+        <div class="text-muted small">Salarios activos vigentes</div>
+    </div>
+    <a class="btn btn-dark" asp-controller="Salaries" asp-action="Crear">+ Nuevo salario</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:80px;">N° Emp</th>
+                        <th>Empleado</th>
+                        <th>Salario</th>
+                        <th style="width:130px;">Desde</th>
+                        <th style="width:100px;">Estado</th>
+                        <th class="text-end" style="width:100px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">@s.EmpNo</td>
+                            <td class="fw-semibold">@s.FullName</td>
+                            <td class="fw-semibold text-success">@s.Salary.ToString("C")</td>
+                            <td>@s.FromDate.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                @if (s.ToDate == null)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    @s.ToDate.Value.ToString("yyyy-MM-dd")
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-controller="Salaries" asp-action="Editar"
+                                   asp-route-id="@s.IdSalario">Editar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small p-3">Empleados activos: @(Model?.Count() ?? 0)</div>
+    </div>
+</div>

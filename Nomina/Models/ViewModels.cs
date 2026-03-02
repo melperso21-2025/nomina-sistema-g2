@@ -154,4 +154,16 @@ namespace Nomina.Models
         public long     NewSalary      { get; set; }
         public DateTime FromDate       { get; set; }
     }
+
+    // ─── SALARIES ────────────────────────────────────────────────
+
+    public class SalaryListItem
+    {
+        public int       IdSalario { get; set; }
+        public int       EmpNo     { get; set; }
+        public string    FullName  { get; set; }
+        public decimal   Salary    { get; set; }
+        public DateTime  FromDate  { get; set; }
+        public DateTime? ToDate    { get; set; }
+    }
 }
