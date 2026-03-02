@@ -24,7 +24,10 @@
         <h2 class="mb-0">🏢 Departamentos</h2>
         <div class="text-muted small">Total: @ViewBag.Total</div>
     </div>
-    <a class="btn btn-dark" asp-controller="Departments" asp-action="Crear">+ Nuevo departamento</a>
+    @if (Context.Session.GetString("rol") == "Admin")
+    {
+        <a class="btn btn-dark" asp-controller="Departments" asp-action="Crear">+ Nuevo departamento</a>
+    }
 </div>
 
 @* Buscador *@
@@ -68,9 +71,12 @@
                                 <a class="btn btn-sm btn-outline-secondary"
                                    asp-controller="Departments" asp-action="Detalle"
                                    asp-route-id="@dept.DeptNo">Ver</a>
-                                <a class="btn btn-sm btn-dark"
-                                   asp-controller="Departments" asp-action="Editar"
-                                   asp-route-id="@dept.DeptNo">Editar</a>
+                                @if (Context.Session.GetString("rol") == "Admin")
+                                {
+                                    <a class="btn btn-sm btn-dark"
+                                       asp-controller="Departments" asp-action="Editar"
+                                       asp-route-id="@dept.DeptNo">Editar</a>
+                                }
                             </td>
                         </tr>
                     }

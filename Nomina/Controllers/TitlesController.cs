@@ -96,6 +96,12 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
+
             CargarEmpleados();
             return View();
         }
@@ -107,6 +113,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
 
             if (string.IsNullOrWhiteSpace(title))
             {
@@ -214,6 +226,12 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
+
             TitleListItem model = null;
             string connStr = _config.GetConnectionString("NominaDB");
 
@@ -266,6 +284,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
 
             if (string.IsNullOrWhiteSpace(newTitle))
             {

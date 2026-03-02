@@ -159,29 +159,28 @@
                 🎓 Titles
             </a>
 
+            @if (Context.Session.GetString("rol") == "Admin")
+            {
             <div class="nav-section">Payroll</div>
             <a asp-controller="Salaries" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Salaries" ? "active" : "")">
-                💰 Salaries
+                 💰 Salaries
             </a>
             <a asp-controller="AuditSalaryLog" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditSalaryLog" ? "active" : "")">
-                📑 Salary Audit
+                 📑 Salary Audit
             </a>
 
             <div class="nav-section">Reports</div>
             <a asp-controller="Reports" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
-                📊 Reports
+                 📊 Reports
             </a>
 
-            @* Admin-only: Users *@
-            @if (Context.Session.GetString("rol") == "Admin")
-            {
             <div class="nav-section">Administration</div>
             <a asp-controller="Users" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
-                👤 Users
+                 👤 Users
             </a>
             }
         </nav>

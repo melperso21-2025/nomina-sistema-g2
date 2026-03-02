@@ -24,6 +24,12 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Información confidencial.";
+                return RedirectToAction("Index", "Home");
+            }
+
             CargarDepartamentos();
             ViewBag.Usuario = HttpContext.Session.GetString("usuario");
             ViewBag.Rol     = HttpContext.Session.GetString("rol");
@@ -35,6 +41,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Información confidencial.";
+                return RedirectToAction("Index", "Home");
+            }
 
             var resultados = new List<PayrollReportItem>();
             string connStr = _config.GetConnectionString("NominaDB");
@@ -78,6 +90,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Información confidencial.";
+                return RedirectToAction("Index", "Home");
+            }
 
             var resultados = new List<SalaryChangesReportItem>();
             string connStr = _config.GetConnectionString("NominaDB");

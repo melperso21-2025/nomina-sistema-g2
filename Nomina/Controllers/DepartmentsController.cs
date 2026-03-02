@@ -135,6 +135,12 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
+
             return View();
         }
 
@@ -145,6 +151,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
 
             string connStr = _config.GetConnectionString("NominaDB");
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -180,6 +192,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
 
             Department dept = null;
             string connStr = _config.GetConnectionString("NominaDB");
@@ -220,6 +238,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
 
             if (string.IsNullOrWhiteSpace(dept_name))
             {
@@ -263,6 +287,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
 
             string connStr = _config.GetConnectionString("NominaDB");
             using (SqlConnection conn = new SqlConnection(connStr))

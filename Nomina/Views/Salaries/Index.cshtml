@@ -11,7 +11,10 @@
         <h2 class="mb-0">💰 Salarios</h2>
         <div class="text-muted small">Salarios activos vigentes</div>
     </div>
-    <a class="btn btn-dark" asp-controller="Salaries" asp-action="Crear">+ Nuevo salario</a>
+    @if (Context.Session.GetString("rol") == "Admin")
+    {
+        <a class="btn btn-dark" asp-controller="Salaries" asp-action="Crear">+ Nuevo salario</a>
+    }
 </div>
 
 <div class="card shadow-sm">
@@ -47,9 +50,15 @@
                                 }
                             </td>
                             <td class="text-end">
-                                <a class="btn btn-sm btn-outline-secondary"
-                                   asp-controller="Salaries" asp-action="Editar"
-                                   asp-route-id="@s.IdSalario">Editar</a>
+                                <a class="btn btn-sm btn-outline-primary"
+                                   asp-controller="Salaries" asp-action="Details"
+                                   asp-route-id="@s.IdSalario">Ver</a>
+                                @if (Context.Session.GetString("rol") == "Admin")
+                                {
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       asp-controller="Salaries" asp-action="Edit"
+                                       asp-route-id="@s.IdSalario">Editar</a>
+                                }
                             </td>
                         </tr>
                     }

@@ -1,0 +1,60 @@
+@model Nomina.Models.SalaryListItem
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Detalle de Salario";
+    var usd = new CultureInfo("en-US");
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">💰 Detalle de Salario</h2>
+    <a asp-controller="Salaries" asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
+</div>
+
+<div class="card shadow-sm" style="max-width:520px;">
+    <div class="card-body p-4">
+
+        <div class="mb-3">
+            <span class="text-muted small fw-semibold">N° Empleado</span>
+            <p class="fw-semibold mb-0">#@Model.EmpNo</p>
+        </div>
+
+        <div class="mb-3">
+            <span class="text-muted small fw-semibold">Empleado</span>
+            <p class="fw-semibold mb-0">@Model.FullName</p>
+        </div>
+
+        <div class="mb-3">
+            <span class="text-muted small fw-semibold">Salario</span>
+            <p class="fw-semibold text-success mb-0">@Model.Salary.ToString("C", usd)</p>
+        </div>
+
+        <div class="mb-3">
+            <span class="text-muted small fw-semibold">Fecha desde</span>
+            <p class="mb-0">@Model.FromDate.ToString("dd/MM/yyyy")</p>
+        </div>
+
+        <div class="mb-3">
+            <span class="text-muted small fw-semibold">Fecha hasta</span>
+            <p class="mb-0">
+                @if (Model.ToDate == null)
+                {
+                    <span class="badge bg-success">Activo</span>
+                }
+                else
+                {
+                    @Model.ToDate.Value.ToString("dd/MM/yyyy")
+                }
+            </p>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <a asp-controller="Salaries" asp-action="Edit"
+               asp-route-id="@Model.IdSalario"
+               class="btn btn-dark px-4">Editar</a>
+            <a asp-controller="Salaries" asp-action="Index"
+               class="btn btn-outline-secondary px-4">Cancelar</a>
+        </div>
+
+    </div>
+</div>
