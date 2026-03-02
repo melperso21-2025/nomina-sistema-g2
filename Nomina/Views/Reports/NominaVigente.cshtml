@@ -83,3 +83,28 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Usamos @@media para que el motor de C# (Razor) no se confunda */
+    @@media print {
+        /* Ocultar el menú lateral, la barra superior y los botones */
+        #sidebar, #topbar, .btn, footer {
+            display: none !important;
+        }
+        /* Hacer que el contenido principal ocupe toda la hoja */
+        #main, #content, .container, .container-fluid {
+            margin-left: 0 !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        /* Opciones extra para que la tabla se vea mejor en PDF */
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+        /* Evitar que una fila se corte por la mitad entre dos páginas */
+        tr {
+            page-break-inside: avoid;
+        }
+    }
+</style>
