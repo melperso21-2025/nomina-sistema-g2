@@ -1,12 +1,11 @@
-﻿
-using Nomina.Data;
+﻿using Nomina.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// Registrar DbContext 
+// Registrar DbContext
 builder.Services.AddDbContext<NominaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NominaDB")));
 
@@ -20,6 +19,12 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
 
 app.UseStaticFiles();
 app.UseRouting();

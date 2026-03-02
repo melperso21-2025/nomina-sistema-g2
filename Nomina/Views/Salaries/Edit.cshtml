@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Editar Salario";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">💰 Editar Salario</h2>
+    <a asp-controller="Salaries" asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
+</div>
+
+<div class="card shadow-sm" style="max-width:520px;">
+    <div class="card-body p-4">
+        <form id="salaryEditForm" method="post" asp-controller="Salaries" asp-action="Edit">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">EMP_NO</label>
+                <input type="number" name="emp_no" class="form-control"
+                       value="1" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">●</span> Salario
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" name="salary" class="form-control"
+                           required min="1" step="0.01" value="1400.00" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">●</span> Fecha desde (from_date)
+                </label>
+                <input type="date" name="from_date" class="form-control"
+                       required value="2024-01-01" />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Fecha hasta (to_date)</label>
+                <input type="date" name="to_date" class="form-control" />
+                <div class="form-text text-muted">Dejar vacío si el salario está activo.</div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark px-4">Guardar cambios</button>
+                <a asp-controller="Salaries" asp-action="Index"
+                   class="btn btn-outline-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('salaryEditForm').addEventListener('submit', function (e) {
+            var errores = [];
+            var from = new Date(this.from_date.value);
+            var toVal = this.to_date.value;
+
+            if (!this.salary.value || this.salary.value <= 0) errores.push('El salario debe ser mayor a 0.');
+            if (!this.from_date.value) errores.push('La fecha desde es requerida.');
+            if (toVal && new Date(toVal) < from) errores.push('La fecha hasta no puede ser anterior a la fecha desde.');
+
+            if (errores.length > 0) {
+                alert(errores.join('\n'));
+                e.preventDefault();
+            }
+        });
+    </script>
+}
