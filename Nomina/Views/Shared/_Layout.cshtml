@@ -6,7 +6,9 @@
     <title>@ViewData["Title"] — Nómina G2</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        body { background: #f5f6fa; }
+        body {
+            background: #f5f6fa;
+        }
 
         /* Sidebar */
         #sidebar {
@@ -14,44 +16,68 @@
             min-height: 100vh;
             background: #1a1a2e;
             position: fixed;
-            top: 0; left: 0;
+            top: 0;
+            left: 0;
             display: flex;
             flex-direction: column;
             z-index: 100;
         }
-        #sidebar .brand {
-            padding: 20px 20px 16px;
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-            border-bottom: 1px solid #2d3a6a;
-        }
-        #sidebar .brand span { color: #4f7cff; }
-        #sidebar nav { flex: 1; padding: 12px 0; }
-        #sidebar nav a {
-            display: block;
-            color: #94a3b8;
-            text-decoration: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            transition: all .15s;
-        }
-        #sidebar nav a:hover { background: #252f4a; color: white; }
-        #sidebar nav a.active { background: #2563eb; color: white; }
-        #sidebar nav .nav-section {
-            font-size: 10px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: #334155;
-            padding: 14px 20px 4px;
-        }
-        #sidebar .user-box {
-            padding: 14px 20px;
-            border-top: 1px solid #2d3a6a;
-            font-size: 12px;
-            color: #64748b;
-        }
-        #sidebar .user-box strong { display: block; color: #94a3b8; }
+
+            #sidebar .brand {
+                padding: 20px 20px 16px;
+                color: white;
+                font-weight: 700;
+                font-size: 16px;
+                border-bottom: 1px solid #2d3a6a;
+            }
+
+                #sidebar .brand span {
+                    color: #4f7cff;
+                }
+
+            #sidebar nav {
+                flex: 1;
+                padding: 12px 0;
+            }
+
+                #sidebar nav a {
+                    display: block;
+                    color: #94a3b8;
+                    text-decoration: none;
+                    padding: 10px 20px;
+                    font-size: 14px;
+                    transition: all .15s;
+                }
+
+                    #sidebar nav a:hover {
+                        background: #252f4a;
+                        color: white;
+                    }
+
+                    #sidebar nav a.active {
+                        background: #2563eb;
+                        color: white;
+                    }
+
+                #sidebar nav .nav-section {
+                    font-size: 10px;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
+                    color: #334155;
+                    padding: 14px 20px 4px;
+                }
+
+            #sidebar .user-box {
+                padding: 14px 20px;
+                border-top: 1px solid #2d3a6a;
+                font-size: 12px;
+                color: #64748b;
+            }
+
+                #sidebar .user-box strong {
+                    display: block;
+                    color: #94a3b8;
+                }
 
         /* Main content */
         #main {
@@ -60,6 +86,7 @@
             display: flex;
             flex-direction: column;
         }
+
         #topbar {
             background: white;
             border-bottom: 1px solid #e2e8f0;
@@ -68,106 +95,128 @@
             align-items: center;
             justify-content: space-between;
         }
-        #topbar .page-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a1a2e;
+
+            #topbar .page-title {
+                font-size: 18px;
+                font-weight: 700;
+                color: #1a1a2e;
+            }
+
+            #topbar .logout a {
+                font-size: 13px;
+                color: #94a3b8;
+                text-decoration: none;
+            }
+
+                #topbar .logout a:hover {
+                    color: #ef4444;
+                }
+
+        #content {
+            padding: 28px;
+            flex: 1;
         }
-        #topbar .logout a {
-            font-size: 13px;
-            color: #94a3b8;
-            text-decoration: none;
-        }
-        #topbar .logout a:hover { color: #ef4444; }
-        #content { padding: 28px; flex: 1; }
 
         /* Alerts */
-        .alert-success { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
-        .alert-danger  { background: #fff1f2; border-color: #fecdd3; color: #dc2626; }
+        .alert-success {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #15803d;
+        }
+
+        .alert-danger {
+            background: #fff1f2;
+            border-color: #fecdd3;
+            color: #dc2626;
+        }
     </style>
 </head>
 <body>
 
-    @* Mostrar sidebar solo si hay sesión activa *@
+    @* Show sidebar only if there's an active session *@
     @if (Context.Session.GetString("usuario") != null)
     {
-        <div id="sidebar">
-            <div class="brand">💼 <span>Nómina</span> G2</div>
-            <nav>
-                <div class="nav-section">Principal</div>
-                <a href="/Dashboard" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
-                    🏠 Dashboard
-                </a>
+    <div id="sidebar">
+        <div class="brand">💼 <span>Nómina</span> G2</div>
+        <nav>
+            <div class="nav-section">Main</div>
+            <a href="/Dashboard" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                🏠 Dashboard
+            </a>
 
-                <div class="nav-section">Gestión</div>
-                <a href="/Empleados" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Empleados" ? "active" : "")">
-                    👤 Empleados
-                </a>
-                <a href="/Dept" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Dept" ? "active" : "")">
-                    🏢 Departamentos
-                </a>
+            <div class="nav-section">Management</div>
+            <a href="/Employees" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Employees" ? "active" : "")">
+                👤 Employees
+            </a>
+            <a href="/Departments" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Departments" ? "active" : "")">
+                🏢 Departments
+            </a>
+            <a href="/Titles" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Titles" ? "active" : "")">
+                🏷️ Titles
+            </a>
 
-                <div class="nav-section">Nómina</div>
-                <a href="/Salarios" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Salarios" ? "active" : "")">
-                    💰 Salarios
-                </a>
-                <a href="/Auditoria" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Auditoria" ? "active" : "")">
-                    📋 Auditoría
-                </a>
-                <a href="/Reportes" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Reportes" ? "active" : "")">
-                    📊 Reportes
-                </a>
+            <div class="nav-section">Payroll</div>
+            <a href="/Salaries" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Salaries" ? "active" : "")">
+                💰 Salaries
+            </a>
+            <a href="/AuditSalaryLog" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditSalaryLog" ? "active" : "")">
+                📋 Salary Audit
+            </a>
 
-                @* Solo Admin ve Usuarios *@
-                @if (Context.Session.GetString("rol") == "Admin")
-                {
-                    <div class="nav-section">Administración</div>
-                    <a href="/Usuarios" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Usuarios" ? "active" : "")">
-                        👥 Usuarios
-                    </a>
-                }
-            </nav>
-            <div class="user-box">
-                <strong>@Context.Session.GetString("nombre")</strong>
-                @Context.Session.GetString("rol")
-            </div>
+            <div class="nav-section">Reports</div>
+            <a href="/Reports" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
+                📊 Reports
+            </a>
+
+            @if (Context.Session.GetString("rol") == "Admin")
+            {
+            <div class="nav-section">Administration</div>
+            <a href="/Users" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
+                👥 Users
+            </a>
+            }
+        </nav>
+        <div class="user-box">
+            <strong>@Context.Session.GetString("nombre")</strong>
+            @Context.Session.GetString("rol")
         </div>
+    </div>
     }
 
     <div id="main">
-        @* Topbar solo si hay sesión *@
+        @* Topbar only if there's an active session *@
         @if (Context.Session.GetString("usuario") != null)
         {
-            <div id="topbar">
-                <div class="page-title">@ViewData["Title"]</div>
-                <div class="logout">
-                    <a href="/Account/Logout">Cerrar sesión →</a>
-                </div>
+        <div id="topbar">
+            <div class="page-title">@ViewData["Title"]</div>
+            <div class="logout">
+                <a href="/Account/Logout">Sign out →</a>
             </div>
+        </div>
         }
 
         <div id="content">
-            @* Mensajes de éxito / error globales *@
+            @* Global success / error messages *@
             @if (TempData["Exito"] != null)
             {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    ✅ @TempData["Exito"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                ✅ @TempData["Exito"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
             }
             @if (TempData["Error"] != null)
             {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    ⚠️ @TempData["Error"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ⚠️ @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
             }
 
             @RenderBody()
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>    
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Nomina.Models.Salary>
+
+@{
+    ViewData["Title"] = "Salaries";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="mb-0">💰 Salaries</h2>
+        <div class="text-muted small">Salary history (test data)</div>
+    </div>
+    <a class="btn btn-dark" asp-controller="Salaries" asp-action="Create">+ New salary</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:90px;">Emp #</th>
+                        <th>Employee</th>
+                        <th>Salary</th>
+                        <th style="width:130px;">From</th>
+                        <th style="width:130px;">To</th>
+                        <th class="text-end" style="width:180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var salary in Model)
+                    {
+                        <tr>
+                            <td>@salary.EmployeeNumber</td>
+                            <td>@salary.EmployeeName</td>
+                            <td class="fw-semibold text-success">@salary.Amount.ToString("C")</td>
+                            <td>@salary.FromDate</td>
+                            <td>
+                                @if (salary.ToDate == null)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    @salary.ToDate
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-controller="Salaries" asp-action="Edit"
+                                   asp-route-id="@salary.Id">Edit</a>
+                                <a class="btn btn-sm btn-outline-danger" href="#">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small p-3">Test data only.</div>
+    </div>
+</div>

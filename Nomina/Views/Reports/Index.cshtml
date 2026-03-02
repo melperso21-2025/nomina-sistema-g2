@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+}
+
+<h2 class="mb-4">📊 Reports</h2>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">📊 Active payroll by department</h5>
+                <p class="card-text text-muted small">Current salary list grouped by department.</p>
+                <a asp-controller="Reportes" asp-action="NominaVigente"
+                   class="btn btn-dark btn-sm">Generate</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title">📋 Salary changes</h5>
+                <p class="card-text text-muted small">Full history of salary changes with filters.</p>
+                <a asp-controller="Reportes" asp-action="CambiosSalariales"
+                   class="btn btn-dark btn-sm">Generate</a>
+            </div>
+        </div>
+    </div>
+</div>
