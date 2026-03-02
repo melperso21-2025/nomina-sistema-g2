@@ -1,21 +1,335 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Nomina.Models;
 
 namespace Nomina.Controllers
 {
     public class TitlesController : Controller
     {
+        private readonly IConfiguration _config;
+
+        public TitlesController(IConfiguration config)
+        {
+            _config = config;
+        }
+
         private bool VerificarSesion() =>
             HttpContext.Session.GetString("usuario") != null;
 
         // GET: /Titles
-        public IActionResult Index()
+        public IActionResult Index(string searchString = null, int page = 1)
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
-            ViewBag.Usuario = HttpContext.Session.GetString("usuario");
-            ViewBag.Rol     = HttpContext.Session.GetString("rol");
+            var cargos   = new List<TitleListItem>();
+            int total    = 0;
+            int pageSize = 20;
+            string connStr = _config.GetConnectionString("NominaDB");
+
+            const string baseFrom = @"
+                FROM titles t
+                INNER JOIN employees e ON t.emp_no = e.emp_no
+                WHERE (@search IS NULL
+                       OR t.title       LIKE '%' + @search + '%'
+                       OR e.first_name  LIKE '%' + @search + '%'
+                       OR e.last_name   LIKE '%' + @search + '%'
+                       OR e.ci          LIKE '%' + @search + '%')";
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+
+                using (SqlCommand countCmd = new SqlCommand("SELECT COUNT(*) " + baseFrom, conn))
+                {
+                    countCmd.Parameters.AddWithValue("@search",
+                        string.IsNullOrWhiteSpace(searchString) ? (object)DBNull.Value : searchString);
+                    total = Convert.ToInt32(countCmd.ExecuteScalar());
+                }
+
+                string dataSql = @"
+                    SELECT t.emp_no,
+                           e.first_name + ' ' + e.last_name AS full_name,
+                           e.ci, t.title, t.from_date, t.to_date
+                    " + baseFrom + @"
+                    ORDER BY t.from_date DESC, e.last_name
+                    OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
+
+                using (SqlCommand cmd = new SqlCommand(dataSql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@search",
+                        string.IsNullOrWhiteSpace(searchString) ? (object)DBNull.Value : searchString);
+                    cmd.Parameters.AddWithValue("@offset",   (page - 1) * pageSize);
+                    cmd.Parameters.AddWithValue("@pageSize", pageSize);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            cargos.Add(new TitleListItem
+                                {
+                                    EmpNo     = Convert.ToInt32(reader.GetValue(0)),
+                                    FullName  = reader.GetValue(1).ToString(),
+                                    Ci        = reader.GetValue(2).ToString(),
+                                    TitleName = reader.GetValue(3).ToString(),
+                                    FromDate  = Convert.ToDateTime(reader.GetValue(4)),
+                                    ToDate    = reader.IsDBNull(5) ? (DateTime?)null
+                                                                   : Convert.ToDateTime(reader.GetValue(5))
+                                });
+                        }
+                    }
+                }
+            }
+
+            ViewBag.Total        = total;
+            ViewBag.Page         = page;
+            ViewBag.SearchString = searchString;
+            ViewBag.Usuario      = HttpContext.Session.GetString("usuario");
+            ViewBag.Rol          = HttpContext.Session.GetString("rol");
+
+            return View(cargos);
+        }
+
+        // GET: /Titles/Crear
+        public IActionResult Crear()
+        {
+            if (!VerificarSesion())
+                return RedirectToAction("Login", "Account");
+
+            CargarEmpleados();
             return View();
+        }
+
+        // POST: /Titles/Crear
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Crear(int empNo, string title, DateTime fromDate, DateTime? toDate)
+        {
+            if (!VerificarSesion())
+                return RedirectToAction("Login", "Account");
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                ViewBag.Error = "El nombre del cargo es requerido.";
+                CargarEmpleados();
+                return View();
+            }
+
+            string connStr = _config.GetConnectionString("NominaDB");
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand("sp_register_title", conn))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@p_emp_no",    empNo);
+                    cmd.Parameters.AddWithValue("@p_title",     title);
+                    cmd.Parameters.AddWithValue("@p_from_date", fromDate);
+                    cmd.Parameters.AddWithValue("@p_to_date",   toDate.HasValue ? (object)toDate.Value : DBNull.Value);
+
+                    SqlParameter pMsg = new SqlParameter("@r_message", System.Data.SqlDbType.VarChar, 200)
+                    { Direction = System.Data.ParameterDirection.Output };
+                    cmd.Parameters.Add(pMsg);
+
+                    cmd.ExecuteNonQuery();
+
+                    string msg = pMsg.Value?.ToString() ?? string.Empty;
+                    if (msg.StartsWith("SUCCESS"))
+                    {
+                        TempData["Exito"] = "Cargo asignado correctamente.";
+                        return RedirectToAction("Index");
+                    }
+
+                    ViewBag.Error = msg.Replace("ERROR: ", "");
+                    CargarEmpleados();
+                    return View();
+                }
+            }
+        }
+
+        // ─── HELPERS ────────────────────────────────────────────────────
+
+        // GET: /Titles/Details/1013
+        public IActionResult Details(int id)
+        {
+            if (!VerificarSesion())
+                return RedirectToAction("Login", "Account");
+
+            string connStr = _config.GetConnectionString("NominaDB");
+            var historial  = new List<TitleListItem>();
+            string fullName = string.Empty;
+            string ci       = string.Empty;
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                string sql = @"
+                    SELECT e.emp_no,
+                           e.first_name + ' ' + e.last_name AS full_name,
+                           e.ci, t.title, t.from_date, t.to_date
+                    FROM titles t
+                    INNER JOIN employees e ON t.emp_no = e.emp_no
+                    WHERE t.emp_no = @empNo
+                    ORDER BY t.from_date DESC";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@empNo", id);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            fullName = reader.GetValue(1).ToString();
+                            ci       = reader.GetValue(2).ToString();
+                            historial.Add(new TitleListItem
+                            {
+                                EmpNo     = Convert.ToInt32(reader.GetValue(0)),
+                                FullName  = fullName,
+                                Ci        = ci,
+                                TitleName = reader.GetValue(3).ToString(),
+                                FromDate  = Convert.ToDateTime(reader.GetValue(4)),
+                                ToDate    = reader.IsDBNull(5) ? (DateTime?)null
+                                                               : Convert.ToDateTime(reader.GetValue(5))
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (!historial.Any())
+                return NotFound();
+
+            ViewBag.EmpNo    = id;
+            ViewBag.FullName = fullName;
+            ViewBag.Ci       = ci;
+            ViewBag.Usuario  = HttpContext.Session.GetString("usuario");
+
+            return View(historial);
+        }
+
+        // GET: /Titles/Edit/1013
+        public IActionResult Edit(int id)
+        {
+            if (!VerificarSesion())
+                return RedirectToAction("Login", "Account");
+
+            TitleListItem model = null;
+            string connStr = _config.GetConnectionString("NominaDB");
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                string sql = @"
+                    SELECT TOP 1 t.emp_no,
+                           e.first_name + ' ' + e.last_name AS full_name,
+                           e.ci, t.title, t.from_date, t.to_date
+                    FROM titles t
+                    INNER JOIN employees e ON t.emp_no = e.emp_no
+                    WHERE t.emp_no = @empNo
+                    ORDER BY t.from_date DESC";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@empNo", id);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            model = new TitleListItem
+                            {
+                                EmpNo     = Convert.ToInt32(reader.GetValue(0)),
+                                FullName  = reader.GetValue(1).ToString(),
+                                Ci        = reader.GetValue(2).ToString(),
+                                TitleName = reader.GetValue(3).ToString(),
+                                FromDate  = Convert.ToDateTime(reader.GetValue(4)),
+                                ToDate    = reader.IsDBNull(5) ? (DateTime?)null
+                                                               : Convert.ToDateTime(reader.GetValue(5))
+                            };
+                        }
+                    }
+                }
+            }
+
+            if (model == null)
+                return NotFound();
+
+            ViewBag.Usuario = HttpContext.Session.GetString("usuario");
+            return View(model);
+        }
+
+        // POST: /Titles/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int empNo, string originalTitle, DateTime originalFromDate,
+                                  string newTitle, DateTime? toDate)
+        {
+            if (!VerificarSesion())
+                return RedirectToAction("Login", "Account");
+
+            if (string.IsNullOrWhiteSpace(newTitle))
+            {
+                TempData["Error"] = "El nombre del cargo es requerido.";
+                return RedirectToAction("Edit", new { id = empNo });
+            }
+
+            string connStr = _config.GetConnectionString("NominaDB");
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                string sql = @"
+                    UPDATE titles
+                    SET title   = @newTitle,
+                        to_date = @toDate
+                    WHERE emp_no    = @empNo
+                      AND title     = @originalTitle
+                      AND from_date = @fromDate";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@empNo",         empNo);
+                    cmd.Parameters.AddWithValue("@originalTitle", originalTitle);
+                    cmd.Parameters.AddWithValue("@fromDate",      originalFromDate);
+                    cmd.Parameters.AddWithValue("@newTitle",      newTitle);
+                    cmd.Parameters.AddWithValue("@toDate",        toDate.HasValue ? (object)toDate.Value : DBNull.Value);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            TempData["Exito"] = "Cargo actualizado correctamente.";
+            return RedirectToAction("Details", new { id = empNo });
+        }
+
+        // ─── HELPERS ────────────────────────────────────────────────────
+
+        private void CargarEmpleados()
+        {
+            var empleados = new List<EmployeeListItem>();
+            string connStr = _config.GetConnectionString("NominaDB");
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand(
+                    @"SELECT emp_no, ci, first_name + ' ' + last_name AS full_name
+                      FROM employees WHERE is_active = 1
+                      ORDER BY last_name, first_name", conn))
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        empleados.Add(new EmployeeListItem
+                        {
+                            EmpNo    = Convert.ToInt32(reader.GetValue(0)),
+                            Ci       = reader.GetValue(1).ToString(),
+                            FullName = reader.GetValue(2).ToString()
+                        });
+                    }
+                }
+            }
+
+            ViewBag.Empleados = empleados;
         }
     }
 }

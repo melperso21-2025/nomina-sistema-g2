@@ -1,0 +1,58 @@
+@model IEnumerable<Nomina.Models.TitleListItem>
+
+@{
+    ViewData["Title"] = "Historial de Cargos";
+}
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Exito"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h2 class="mb-0">🏷️ Historial de Cargos</h2>
+        <div class="text-muted small">@ViewBag.FullName — Cédula: @ViewBag.Ci</div>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Titles" asp-action="Edit" asp-route-id="@ViewBag.EmpNo"
+           class="btn btn-dark">Editar cargo vigente</a>
+        <a asp-controller="Titles" asp-action="Index"
+           class="btn btn-outline-secondary">← Regresar a la lista</a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Cargo</th>
+                        <th style="width:140px;">Desde</th>
+                        <th style="width:140px;">Hasta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@t.TitleName</td>
+                            <td>@t.FromDate.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (t.ToDate == null)
+                                { <span class="badge bg-success">Vigente</span> }
+                                else
+                                { @t.ToDate.Value.ToString("dd/MM/yyyy") }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small p-3">Registros: @Model.Count()</div>
+    </div>
+</div>

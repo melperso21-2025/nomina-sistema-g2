@@ -166,4 +166,16 @@ namespace Nomina.Models
         public DateTime  FromDate  { get; set; }
         public DateTime? ToDate    { get; set; }
     }
+
+    // ─── CARGOS (TITLES) ────────────────────────────────────────
+
+    public class TitleListItem
+    {
+        public int       EmpNo     { get; set; }
+        public string    FullName  { get; set; }
+        public string    Ci        { get; set; }
+        public string    TitleName { get; set; }
+        public DateTime  FromDate  { get; set; }
+        public DateTime? ToDate    { get; set; }
+    }
 }
