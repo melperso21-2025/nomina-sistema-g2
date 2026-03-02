@@ -7,7 +7,7 @@
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
         <h2 class="mb-0">💰 Salaries</h2>
-        <div class="text-muted small">Salary history (test data)</div>
+        <div class="text-muted small">Salary history</div>
     </div>
     <a class="btn btn-dark" asp-controller="Salaries" asp-action="Create">+ New salary</a>
 </div>
@@ -19,7 +19,6 @@
                 <thead class="table-light">
                     <tr>
                         <th style="width:90px;">Emp #</th>
-                        <th>Employee</th>
                         <th>Salary</th>
                         <th style="width:130px;">From</th>
                         <th style="width:130px;">To</th>
@@ -30,10 +29,9 @@
                     @foreach (var salary in Model)
                     {
                         <tr>
-                            <td>@salary.EmployeeNumber</td>
-                            <td>@salary.EmployeeName</td>
-                            <td class="fw-semibold text-success">@salary.Amount.ToString("C")</td>
-                            <td>@salary.FromDate</td>
+                            <td>@salary.EmpNo</td>
+                            <td class="fw-semibold text-success">@salary.SalaryAmount.ToString("C")</td>
+                            <td>@salary.FromDate.ToString("yyyy-MM-dd")</td>
                             <td>
                                 @if (salary.ToDate == null)
                                 {
@@ -41,13 +39,13 @@
                                 }
                                 else
                                 {
-                                    @salary.ToDate
+                                    @salary.ToDate.Value.ToString("yyyy-MM-dd")
                                 }
                             </td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-secondary"
                                    asp-controller="Salaries" asp-action="Edit"
-                                   asp-route-id="@salary.Id">Edit</a>
+                                   asp-route-id="@salary.IdSalario">Edit</a>
                                 <a class="btn btn-sm btn-outline-danger" href="#">Delete</a>
                             </td>
                         </tr>
@@ -55,6 +53,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="text-muted small p-3">Test data only.</div>
+        <div class="text-muted small p-3">Total records: @(Model?.Count() ?? 0)</div>
     </div>
 </div>
