@@ -1,4 +1,4 @@
-namespace nomina.Models
+namespace Nomina.Models
 {
     public class ErrorViewModel
     {

@@ -1,0 +1,155 @@
+@model Nomina.Models.EmployeeDetail
+
+@{
+    ViewData["Title"] = "Employee Detail";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">?? Employee Detail</h2>
+    <div>
+        <a asp-controller="Empleados" asp-action="Editar" asp-route-id="@Model.EmpNo"
+           class="btn btn-dark me-2">Edit</a>
+        <a asp-controller="Empleados" asp-action="Index"
+           class="btn btn-outline-secondary">? Back</a>
+    </div>
+</div>
+
+@* Datos personales *@
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-semibold">Personal data</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <div class="text-muted small text-uppercase">Emp #</div>
+                <div class="fw-bold">@Model.EmpNo</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">Full name</div>
+                <div class="fw-bold">@Model.FullName</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small text-uppercase">CI</div>
+                <div>@Model.Ci</div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-muted small text-uppercase">Gender</div>
+                <div>@Model.Gender</div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-muted small text-uppercase">Hire date</div>
+                <div>@Model.HireDate.ToString("yyyy-MM-dd")</div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Email</div>
+                <div>@Model.Email</div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Birth date</div>
+                <div>@Model.BirthDate.ToString("yyyy-MM-dd")</div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Status</div>
+                <div>
+                    @if (Model.IsActive)
+                    { <span class="badge bg-success">Active</span> }
+                    else
+                    { <span class="badge bg-danger">Inactive</span> }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Salario vigente + actualizar *@
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-semibold">Current salary</div>
+    <div class="card-body">
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <div class="text-muted small text-uppercase">Salary</div>
+                <div class="fw-bold text-success fs-5">@Model.Salary.ToString("C")</div>
+            </div>
+        </div>
+        <form method="post" asp-controller="Empleados" asp-action="ActualizarSalario" class="row g-2 align-items-end">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="empNo" value="@Model.EmpNo" />
+            <div class="col-auto">
+                <label class="form-label fw-semibold">New salary</label>
+                <input type="number" name="salary" class="form-control" min="1" required placeholder="1400" />
+            </div>
+            <div class="col-auto">
+                <label class="form-label fw-semibold">From date</label>
+                <input type="date" name="fromDate" class="form-control" required />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark">Update salary</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* Departamento + asignar *@
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-semibold">Department</div>
+    <div class="card-body">
+        <div class="mb-3">
+            <span class="fw-bold">@Model.DeptName</span>
+        </div>
+        <form method="post" asp-controller="Empleados" asp-action="AsignarDepartamento" class="row g-2 align-items-end">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="empNo" value="@Model.EmpNo" />
+            <div class="col-auto">
+                <label class="form-label fw-semibold">Department</label>
+                <select name="deptNo" class="form-select" required>
+                    <option value="">Select...</option>
+                    @foreach (var d in ViewBag.Departamentos as IEnumerable<Nomina.Models.DepartmentItem>)
+                    {
+                        <option value="@d.DeptNo">@d.DeptName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="form-label fw-semibold">From date</label>
+                <input type="date" name="fromDate" class="form-control" required />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark">Assign</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* Cargo + registrar *@
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-semibold">Title / Position</div>
+    <div class="card-body">
+        <div class="mb-3">
+            <span class="fw-bold">@Model.Title</span>
+        </div>
+        <form method="post" asp-controller="Empleados" asp-action="RegistrarTitulo" class="row g-2 align-items-end">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="empNo" value="@Model.EmpNo" />
+            <div class="col-auto">
+                <label class="form-label fw-semibold">New title</label>
+                <input type="text" name="title" class="form-control" required placeholder="Senior Analyst" />
+            </div>
+            <div class="col-auto">
+                <label class="form-label fw-semibold">From date</label>
+                <input type="date" name="fromDate" class="form-control" required />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark">Register</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* Deactivate *@
+@if (Model.IsActive)
+{
+    <form method="post" asp-controller="Empleados" asp-action="Desactivar" asp-route-id="@Model.EmpNo"
+          onsubmit="return confirm('Deactivate this employee?')">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-danger">Deactivate employee</button>
+    </form>
+}

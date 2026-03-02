@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using nomina.Models;
+using Nomina.Models;
 using System.Diagnostics;
 
 namespace   Nomina.Controllers
