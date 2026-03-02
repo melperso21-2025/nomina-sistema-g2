@@ -29,7 +29,8 @@ namespace Nomina.Controllers
             {
                 conn.Open();
                 using (SqlCommand cmd = new SqlCommand(
-                    "SELECT TOP 100 emp_no, action_date, previous_salary, new_salary, user_session " +
+                    "SELECT TOP 100 emp_no, action_date, previous_salary, new_salary, " +
+                    "RTRIM(CONVERT(NVARCHAR(200), user_session)) AS user_session " +
                     "FROM salary_audit_log ORDER BY action_date DESC", conn))
                 {
                     using (SqlDataReader reader = cmd.ExecuteReader())

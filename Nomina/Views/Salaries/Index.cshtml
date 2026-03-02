@@ -50,12 +50,12 @@
                                 }
                             </td>
                             <td class="text-end">
-                                <a class="btn btn-sm btn-outline-primary"
+                                <a class="btn btn-sm btn-outline-secondary"
                                    asp-controller="Salaries" asp-action="Details"
                                    asp-route-id="@s.IdSalario">Ver</a>
                                 @if (Context.Session.GetString("rol") == "Admin")
                                 {
-                                    <a class="btn btn-sm btn-outline-secondary"
+                                    <a class="btn btn-sm btn-dark"
                                        asp-controller="Salaries" asp-action="Edit"
                                        asp-route-id="@s.IdSalario">Editar</a>
                                 }
