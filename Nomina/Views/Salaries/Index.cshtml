@@ -1,7 +1,9 @@
 ﻿@model IEnumerable<Nomina.Models.SalaryListItem>
+@using System.Globalization
 
 @{
     ViewData["Title"] = "Salarios";
+    var usd = new CultureInfo("en-US");
 }
 
 <div class="d-flex align-items-center justify-content-between mb-3">
@@ -16,7 +18,7 @@
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead class="table-dark">
                     <tr>
                         <th style="width:80px;">N° Emp</th>
                         <th>Empleado</th>
@@ -32,8 +34,8 @@
                         <tr>
                             <td class="text-muted">@s.EmpNo</td>
                             <td class="fw-semibold">@s.FullName</td>
-                            <td class="fw-semibold text-success">@s.Salary.ToString("C")</td>
-                            <td>@s.FromDate.ToString("yyyy-MM-dd")</td>
+                            <td class="fw-semibold text-success">@s.Salary.ToString("C", usd)</td>
+                            <td>@s.FromDate.ToString("dd/MM/yyyy")</td>
                             <td>
                                 @if (s.ToDate == null)
                                 {
@@ -41,7 +43,7 @@
                                 }
                                 else
                                 {
-                                    @s.ToDate.Value.ToString("yyyy-MM-dd")
+                                    @s.ToDate.Value.ToString("dd/MM/yyyy")
                                 }
                             </td>
                             <td class="text-end">
