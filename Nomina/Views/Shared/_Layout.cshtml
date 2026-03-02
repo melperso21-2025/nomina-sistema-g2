@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Nómina G2</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
     <style>
         body {
             background: #f5f6fa;
@@ -142,21 +143,21 @@
             <div class="nav-section">Main</div>
             <a asp-controller="Dashboard" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
-                🏠 Dashboard
+                🏠 Panel de Control
             </a>
 
             <div class="nav-section">Management</div>
             <a asp-controller="Employees" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Employees" ? "active" : "")">
-                👥 Employees
+                👥 Empleados
             </a>
             <a asp-controller="Departments" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Departments" ? "active" : "")">
-                🏢 Departments
+                🏢 Departamentos
             </a>
             <a asp-controller="Titles" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Titles" ? "active" : "")">
-                🎓 Titles
+                🎓 Cargos
             </a>
 
             @if (Context.Session.GetString("rol") == "Admin")
@@ -164,23 +165,23 @@
             <div class="nav-section">Payroll</div>
             <a asp-controller="Salaries" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Salaries" ? "active" : "")">
-                 💰 Salaries
+                 💰 Salarios
             </a>
             <a asp-controller="AuditSalaryLog" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditSalaryLog" ? "active" : "")">
-                 📑 Salary Audit
+                 📑 Auditoría
             </a>
 
             <div class="nav-section">Reports</div>
             <a asp-controller="Reports" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
-                 📊 Reports
+                 📊 Reportes
             </a>
 
             <div class="nav-section">Administration</div>
             <a asp-controller="Users" asp-action="Index"
                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
-                 👤 Users
+                 👤 Usuarios
             </a>
             }
         </nav>

@@ -1,81 +1,118 @@
-
 @model Nomina.Models.DashboardViewModel
+@using System.Globalization
 
 @{
     ViewData["Title"] = "Dashboard";
+    var usd = new CultureInfo("en-US");
 }
 
-<div class="row mb-4">
+@* KPI Cards *@
+<div class="row g-4 mb-4">
+
     <div class="col-md-4">
-        <div class="card text-white mb-3" style="background: linear-gradient(135deg, #2563eb 0%, #1a1a2e 100%);">
-            <div class="card-body">
+        <div class="card text-white h-100"
+             style="background: linear-gradient(135deg, #2563eb 0%, #1a1a2e 100%); border: none;">
+            <div class="card-body py-4 px-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="card-title mb-1">EMPLOYEES</h6>
-                        <h2 class="mb-0 fw-bold">@Model.TotalEmpleados</h2>
+                        <p class="text-uppercase mb-1 fw-semibold"
+                           style="font-size:11px; letter-spacing:1.5px; opacity:.7;">Empleados</p>
+                        <h2 class="mb-0 fw-bold" style="font-size:2.4rem;">@Model.TotalEmpleados</h2>
                     </div>
-                    <div><span class="fs-2">??</span></div>
+                    <i class="fa-solid fa-users fa-2x" style="opacity:.5;"></i>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="col-md-4">
-        <div class="card text-white mb-3" style="background: linear-gradient(135deg, #059669 0%, #2563eb 100%);">
-            <div class="card-body">
+        <div class="card text-white h-100"
+             style="background: linear-gradient(135deg, #059669 0%, #2563eb 100%); border: none;">
+            <div class="card-body py-4 px-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="card-title mb-1">DEPARTMENTS</h6>
-                        <h2 class="mb-0 fw-bold">@Model.TotalDepartamentos</h2>
+                        <p class="text-uppercase mb-1 fw-semibold"
+                           style="font-size:11px; letter-spacing:1.5px; opacity:.7;">Departamentos</p>
+                        <h2 class="mb-0 fw-bold" style="font-size:2.4rem;">@Model.TotalDepartamentos</h2>
                     </div>
-                    <div><span class="fs-2">??</span></div>
+                    <i class="fa-solid fa-building fa-2x" style="opacity:.5;"></i>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="col-md-4">
-        <div class="card text-white mb-3" style="background: linear-gradient(135deg, #4f7cff 0%, #059669 100%);">
-            <div class="card-body">
+        <div class="card text-white h-100"
+             style="background: linear-gradient(135deg, #7c3aed 0%, #059669 100%); border: none;">
+            <div class="card-body py-4 px-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="card-title mb-1">AVG SALARY</h6>
-                        <h2 class="mb-0 fw-bold">@Model.SalarioPromedio.ToString("C")</h2>
+                        <p class="text-uppercase mb-1 fw-semibold"
+                           style="font-size:11px; letter-spacing:1.5px; opacity:.7;">Salario Promedio</p>
+                        <h2 class="mb-0 fw-bold" style="font-size:2.4rem;">
+                            @Model.SalarioPromedio.ToString("C0", usd)
+                        </h2>
                     </div>
-                    <div><span class="fs-2">??</span></div>
+                    <i class="fa-solid fa-money-bill-wave fa-2x" style="opacity:.5;"></i>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 
+@* Tabla de últimos cambios *@
 <div class="card shadow-sm">
-    <div class="card-header bg-white">
-        <h5 class="mb-0 fw-semibold">Latest salary changes</h5>
+    <div class="card-header bg-white d-flex align-items-center gap-2 py-3">
+        <i class="fa-solid fa-clock-rotate-left text-secondary"></i>
+        <h5 class="mb-0 fw-semibold">Últimos cambios de salario</h5>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
+                <thead class="table-dark">
                     <tr>
-                        <th>Employee</th>
-                        <th>Previous</th>
-                        <th>New salary</th>
-                        <th style="width:160px;">Date</th>
-                        <th>User</th>
+                        <th>Empleado</th>
+                        <th>Anterior</th>
+                        <th>Nuevo Salario</th>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var c in Model.UltimosCambios)
                     {
                         <tr>
-                            <td>@c.FullName</td>
-                            <td class="text-muted">@c.PreviousSalary.ToString("C")</td>
-                            <td class="text-success fw-semibold">@c.NewSalary.ToString("C")</td>
-                            <td><small class="text-muted">@c.ActionDate.ToString("yyyy-MM-dd")</small></td>
-                            <td><small>@c.UserSession</small></td>
+                            <td class="fw-semibold">@c.FullName</td>
+                            <td class="text-muted">@c.PreviousSalary.ToString("C0", usd)</td>
+                            <td>
+                                <span class="text-success fw-semibold">
+                                    @c.NewSalary.ToString("C0", usd)
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    @c.ActionDate.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary fw-normal">
+                                    @(new string((c.UserSession ?? "").Where(ch => ch >= ' ' && ch != '\uFFFD').ToArray()).Trim())
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.UltimosCambios.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-5">
+                                <i class="fa-solid fa-circle-info me-2"></i>
+                                No hay cambios de salario registrados.
+                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
     </div>
-</div>  
+</div>
