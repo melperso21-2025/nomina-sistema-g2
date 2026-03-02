@@ -74,7 +74,7 @@
                             <td class="text-muted">@item.PreviousSalary.ToString("C", usd)</td>
                             <td class="fw-semibold text-success">@item.NewSalary.ToString("C", usd)</td>
                             <td>@item.FromDate.ToString("dd/MM/yyyy")</td>
-                            <td><span class="badge bg-secondary">@item.UserSession</span></td>
+                            <td><span class="badge bg-secondary">@(new string(item.UserSession.Where(ch => ch >= ' ' && ch != '\uFFFD').ToArray()))</span></td>
                         </tr>
                     }
                 </tbody>
