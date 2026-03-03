@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+﻿-- =============================================
+=======
 -- =============================================
+>>>>>>> develop
 -- 03_TRIGGERS.SQL
 -- Sistema de Nomina G2
 -- Ejecutar DESPUES de 02_store_procedures.sql
@@ -78,4 +82,8 @@ BEGIN
         ROLLBACK TRANSACTION;
     END
 END
+<<<<<<< HEAD
 GO
+=======
+GO
+>>>>>>> develop

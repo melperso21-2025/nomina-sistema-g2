@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @model IEnumerable<Nomina.Models.TitleListItem>
 
 @{
@@ -17,10 +18,15 @@
         @TempData["Error"]
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+=======
+﻿@{
+    ViewData["Title"] = "Titles";
+>>>>>>> origin/develop
 }
 
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
+<<<<<<< HEAD
         <h2 class="mb-0">🏷️ Cargos / Puestos</h2>
         <div class="text-muted small">Total: @ViewBag.Total</div>
     </div>
@@ -110,5 +116,42 @@
                 }
             </div>
         </div>
+=======
+        <h2 class="mb-0">🏷️ Titles</h2>
+        <div class="text-muted small">Test data</div>
+    </div>
+    <a class="btn btn-dark" href="#">+ Assign title</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:90px;">Emp #</th>
+                        <th>Title</th>
+                        <th style="width:140px;">From</th>
+                        <th style="width:140px;">To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>10001</td>
+                        <td>Senior Analyst</td>
+                        <td>2023-01-15</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td>10002</td>
+                        <td>HR Coordinator</td>
+                        <td>2022-09-01</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small p-3">Test data only.</div>
+>>>>>>> origin/develop
     </div>
 </div>

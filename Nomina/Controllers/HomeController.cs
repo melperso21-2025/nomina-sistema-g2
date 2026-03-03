@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nomina.Models;
 using System.Diagnostics;
 
-namespace   Nomina.Controllers
+namespace Nomina.Controllers
 {
     public class HomeController : Controller
     {

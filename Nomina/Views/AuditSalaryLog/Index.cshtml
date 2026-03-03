@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 @model IEnumerable<Nomina.Models.LogAuditory>
 @using System.Globalization
 
 @{
     ViewData["Title"] = "Auditoría de Salarios";
     var usd = new CultureInfo("en-US");
+=======
+﻿@{
+    ViewData["Title"] = "Auditoría Salarial";
+>>>>>>> origin/develop
 }
 
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
+<<<<<<< HEAD
         <h2 class="mb-0">📑 Auditoría de Salarios</h2>
             <div class="text-muted small">Registro de cambios salariales (solo lectura)</div>
+=======
+        <h2 class="mb-0">📋 Auditoría Salarial</h2>
+        <div class="text-muted small">Historial de cambios</div>
+>>>>>>> origin/develop
     </div>
 </div>
 
@@ -17,6 +27,7 @@
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
+<<<<<<< HEAD
                 <thead class="table-dark">
                     <tr>
                         <th style="width:70px;">#</th>
@@ -24,11 +35,20 @@
                         <th class="text-center">Salario anterior</th>
                         <th class="text-center">Salario nuevo</th>
                         <th class="text-center" style="width:130px;">Desde</th>
+=======
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:90px;">EMP_NO</th>
+                        <th>Empleado</th>
+                        <th>Salario anterior</th>
+                        <th>Salario nuevo</th>
+>>>>>>> origin/develop
                         <th style="width:160px;">Fecha</th>
                         <th>Usuario</th>
                     </tr>
                 </thead>
                 <tbody>
+<<<<<<< HEAD
                     @foreach (var log in Model)
                     {
                         <tr>
@@ -58,3 +78,27 @@
         <div class="text-muted small p-3">Registros: @(Model?.Count() ?? 0) (últimos 100)</div>
     </div>
 </div>
+=======
+                    <tr>
+                        <td>10001</td>
+                        <td>Ana Torres</td>
+                        <td>$1,200</td>
+                        <td class="text-success fw-semibold">$1,400</td>
+                        <td>2025-02-28</td>
+                        <td>admin</td>
+                    </tr>
+                    <tr>
+                        <td>10002</td>
+                        <td>Carlos Ruiz</td>
+                        <td>$1,000</td>
+                        <td class="text-success fw-semibold">$1,150</td>
+                        <td>2025-02-27</td>
+                        <td>admin</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small p-3">Solo datos de prueba.</div>
+    </div>
+</div>
+>>>>>>> origin/develop

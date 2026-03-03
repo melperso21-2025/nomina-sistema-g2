@@ -1,13 +1,21 @@
+<<<<<<< HEAD
 ﻿@model IEnumerable<Nomina.Models.SalaryListItem>
 @using System.Globalization
 
 @{
     ViewData["Title"] = "Salarios";
     var usd = new CultureInfo("en-US");
+=======
+﻿@model IEnumerable<Nomina.Models.Salary>
+
+@{
+    ViewData["Title"] = "Salaries";
+>>>>>>> origin/develop
 }
 
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
+<<<<<<< HEAD
         <h2 class="mb-0">💰 Salarios</h2>
         <div class="text-muted small">Salarios activos vigentes</div>
     </div>
@@ -15,11 +23,18 @@
     {
         <a class="btn btn-dark" asp-controller="Salaries" asp-action="Crear">+ Nuevo salario</a>
     }
+=======
+        <h2 class="mb-0">💰 Salaries</h2>
+        <div class="text-muted small">Salary history</div>
+    </div>
+    <a class="btn btn-dark" asp-controller="Salaries" asp-action="Create">+ New salary</a>
+>>>>>>> origin/develop
 </div>
 
 <div class="card shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
+<<<<<<< HEAD
             <table class="table table-striped table-hover align-middle mb-0">
                 <thead class="table-dark">
                     <tr>
@@ -61,13 +76,53 @@
                                            asp-route-id="@s.IdSalario">Editar</a>
                                     }
                                 </div>
+=======
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:90px;">Emp #</th>
+                        <th>Salary</th>
+                        <th style="width:130px;">From</th>
+                        <th style="width:130px;">To</th>
+                        <th class="text-end" style="width:180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var salary in Model)
+                    {
+                        <tr>
+                            <td>@salary.EmpNo</td>
+                            <td class="fw-semibold text-success">@salary.SalaryAmount.ToString("C")</td>
+                            <td>@salary.FromDate.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                @if (salary.ToDate == null)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    @salary.ToDate.Value.ToString("yyyy-MM-dd")
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-controller="Salaries" asp-action="Edit"
+                                   asp-route-id="@salary.IdSalario">Edit</a>
+                                <a class="btn btn-sm btn-outline-danger" href="#">Delete</a>
+>>>>>>> origin/develop
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+<<<<<<< HEAD
         <div class="text-muted small p-3">Empleados activos: @(Model?.Count() ?? 0)</div>
     </div>
 </div>
 
+=======
+        <div class="text-muted small p-3">Total records: @(Model?.Count() ?? 0)</div>
+    </div>
+</div>
+>>>>>>> origin/develop

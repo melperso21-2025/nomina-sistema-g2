@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 ﻿-- =============================================
+=======
+<<<<<<< HEAD
+﻿
+=======
+>>>>>>> develop
+-- =============================================
+>>>>>>> origin/develop
 -- 02_STORE_PROCEDURES.SQL
 -- Sistema de Nomina G2
 -- Ejecutar DESPUES de 01_tablas.sql
