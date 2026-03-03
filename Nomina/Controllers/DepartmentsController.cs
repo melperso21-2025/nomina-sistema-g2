@@ -17,7 +17,7 @@ namespace Nomina.Controllers
             HttpContext.Session.GetString("usuario") != null;
 
         // GET: /Departments
-        public IActionResult Index(string searchString = null, int page = 1)
+        public IActionResult Index(string searchString = null, int page = 1, string sortBy = "codigo", string sortDirection = "asc")
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
@@ -44,8 +44,24 @@ namespace Nomina.Controllers
                     total = Convert.ToInt32(countCmd.ExecuteScalar());
                 }
 
+                // Determinar el campo y dirección de ordenamiento
+                string orderByClause = "";
+                switch (sortBy.ToLower())
+                {
+                    case "codigo":
+                        // Para ordenar numéricamente cuando dept_no son números
+                        orderByClause = $"ORDER BY CAST(dept_no AS INT) {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}";
+                        break;
+                    case "nombre":
+                        orderByClause = $"ORDER BY dept_name {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}";
+                        break;
+                    default:
+                        orderByClause = "ORDER BY CAST(dept_no AS INT) ASC";
+                        break;
+                }
+
                 string dataSql = "SELECT dept_no, dept_name, is_active " + baseFrom + @"
-                    ORDER BY dept_name
+                    " + orderByClause + @"
                     OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
 
                 using (SqlCommand cmd = new SqlCommand(dataSql, conn))
@@ -73,6 +89,8 @@ namespace Nomina.Controllers
             ViewBag.Total        = total;
             ViewBag.Page         = page;
             ViewBag.SearchString = searchString;
+            ViewBag.SortBy       = sortBy;
+            ViewBag.SortDirection = sortDirection;
             ViewBag.Usuario      = HttpContext.Session.GetString("usuario");
             ViewBag.Rol          = HttpContext.Session.GetString("rol");
 

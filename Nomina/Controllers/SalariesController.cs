@@ -17,7 +17,7 @@ namespace Nomina.Controllers
             HttpContext.Session.GetString("usuario") != null;
 
         // GET: /Salaries
-        public IActionResult Index()
+        public IActionResult Index(string sortBy = "empleado", string sortDirection = "asc")
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
@@ -28,6 +28,28 @@ namespace Nomina.Controllers
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
+
+                // Determinar el campo y dirección de ordenamiento
+                string orderByClause = "";
+                switch (sortBy.ToLower())
+                {
+                    case "empleado":
+                        orderByClause = $"ORDER BY s.emp_no {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}";
+                        break;
+                    case "nombre":
+                        orderByClause = $"ORDER BY e.last_name {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}, e.first_name {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}";
+                        break;
+                    case "salario":
+                        orderByClause = $"ORDER BY s.salary {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}";
+                        break;
+                    case "fecha":
+                        orderByClause = $"ORDER BY s.from_date {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}";
+                        break;
+                    default:
+                        orderByClause = "ORDER BY s.emp_no ASC";
+                        break;
+                }
+
                 using (SqlCommand cmd = new SqlCommand(
                     "SELECT s.id_salary, s.emp_no, " +
                     "e.first_name + ' ' + e.last_name AS full_name, " +
@@ -35,7 +57,7 @@ namespace Nomina.Controllers
                     "FROM salaries s " +
                     "INNER JOIN employees e ON s.emp_no = e.emp_no " +
                     "WHERE s.to_date IS NULL " +
-                    "ORDER BY e.last_name, e.first_name", conn))
+                    orderByClause, conn))
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -53,6 +75,8 @@ namespace Nomina.Controllers
                 }
             }
 
+            ViewBag.SortBy = sortBy;
+            ViewBag.SortDirection = sortDirection;
             return View(salarios);
         }
 

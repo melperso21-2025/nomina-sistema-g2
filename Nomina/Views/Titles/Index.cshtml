@@ -2,6 +2,38 @@
 
 @{
     ViewData["Title"] = "Cargos";
+    string currentSortBy = ViewBag.SortBy as string ?? "cargo";
+    string currentDirection = ViewBag.SortDirection as string ?? "asc";
+    
+    // Función helper para generar enlaces de ordenamiento
+    string GetSortLink(string column)
+    {
+        var direction = "asc";
+        var iconClass = "";
+        
+        if (currentSortBy == column)
+        {
+            direction = currentDirection == "asc" ? "desc" : "asc";
+            iconClass = currentDirection == "asc" ? "fa-solid fa-sort-up" : "fa-solid fa-sort-down";
+        }
+        else
+        {
+            iconClass = "fa-solid fa-sort";
+        }
+        
+        var url = Url.Action("Index", new { 
+            sortBy = column, 
+            sortDirection = direction,
+            searchString = ViewBag.SearchString,
+            page = 1
+        });
+        
+        return $"{url}|{iconClass}";
+    }
+    
+    var cargoSort = GetSortLink("cargo").Split('|');
+    var empleadoSort = GetSortLink("empleado").Split('|');
+    var fechaSort = GetSortLink("fecha").Split('|');
 }
 
 @if (TempData["Exito"] != null)
@@ -32,6 +64,8 @@
 
 <form method="get" asp-controller="Titles" asp-action="Index" class="card shadow-sm mb-3">
     <div class="card-body d-flex gap-2 flex-wrap align-items-end">
+        <input type="hidden" name="sortBy" value="@currentSortBy" />
+        <input type="hidden" name="sortDirection" value="@currentDirection" />
         <div>
             <label class="form-label fw-semibold mb-1">Buscar por cargo, empleado o cédula</label>
             <input type="text" name="searchString" value="@ViewBag.SearchString"
@@ -49,10 +83,25 @@
                 <thead class="table-dark">
                     <tr>
                         <th style="width:80px;">N° Emp.</th>
-                        <th>Empleado</th>
+                        <th>
+                            <a href="@empleadoSort[0]" class="text-decoration-none text-white d-flex align-items-center justify-content-between">
+                                Empleado
+                                <i class="@empleadoSort[1] ms-1"></i>
+                            </a>
+                        </th>
                         <th style="width:120px;">Cédula</th>
-                        <th>Cargo</th>
-                        <th style="width:120px;">Desde</th>
+                        <th>
+                            <a href="@cargoSort[0]" class="text-decoration-none text-white d-flex align-items-center justify-content-between">
+                                Cargo
+                                <i class="@cargoSort[1] ms-1"></i>
+                            </a>
+                        </th>
+                        <th style="width:120px;">
+                            <a href="@fechaSort[0]" class="text-decoration-none text-white d-flex align-items-center justify-content-between">
+                                Desde
+                                <i class="@fechaSort[1] ms-1"></i>
+                            </a>
+                        </th>
                         <th style="width:120px;">Hasta</th>
                         <th class="text-end" style="width:120px;">Acciones</th>
                     </tr>
@@ -98,14 +147,18 @@
                     <a class="btn btn-sm btn-outline-secondary"
                        asp-controller="Titles" asp-action="Index"
                        asp-route-page="@(ViewBag.Page - 1)"
-                       asp-route-searchString="@ViewBag.SearchString">← Anterior</a>
+                       asp-route-searchString="@ViewBag.SearchString"
+                       asp-route-sortBy="@currentSortBy"
+                       asp-route-sortDirection="@currentDirection">← Anterior</a>
                 }
                 @if ((int)ViewBag.Total > (int)ViewBag.Page * 20)
                 {
                     <a class="btn btn-sm btn-outline-secondary"
                        asp-controller="Titles" asp-action="Index"
                        asp-route-page="@(ViewBag.Page + 1)"
-                       asp-route-searchString="@ViewBag.SearchString">Siguiente →</a>
+                       asp-route-searchString="@ViewBag.SearchString"
+                       asp-route-sortBy="@currentSortBy"
+                       asp-route-sortDirection="@currentDirection">Siguiente →</a>
                 }
             </div>
         </div>
