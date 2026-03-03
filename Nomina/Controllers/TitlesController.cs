@@ -17,7 +17,7 @@ namespace Nomina.Controllers
             HttpContext.Session.GetString("usuario") != null;
 
         // GET: /Titles
-        public IActionResult Index(string searchString = null, int page = 1)
+        public IActionResult Index(string searchString = null, int page = 1, string sortBy = "cargo", string sortDirection = "asc")
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
@@ -47,12 +47,30 @@ namespace Nomina.Controllers
                     total = Convert.ToInt32(countCmd.ExecuteScalar());
                 }
 
+                // Determinar el campo y dirección de ordenamiento
+                string orderByClause = "";
+                switch (sortBy.ToLower())
+                {
+                    case "cargo":
+                        orderByClause = $"ORDER BY t.title {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}";
+                        break;
+                    case "empleado":
+                        orderByClause = $"ORDER BY e.last_name {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}, e.first_name {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}";
+                        break;
+                    case "fecha":
+                        orderByClause = $"ORDER BY t.from_date {(sortDirection.ToLower() == "desc" ? "DESC" : "ASC")}";
+                        break;
+                    default:
+                        orderByClause = "ORDER BY t.title ASC";
+                        break;
+                }
+
                 string dataSql = @"
                     SELECT t.emp_no,
                            e.first_name + ' ' + e.last_name AS full_name,
                            e.ci, t.title, t.from_date, t.to_date
                     " + baseFrom + @"
-                    ORDER BY t.from_date DESC, e.last_name
+                    " + orderByClause + @"
                     OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
 
                 using (SqlCommand cmd = new SqlCommand(dataSql, conn))
@@ -84,6 +102,8 @@ namespace Nomina.Controllers
             ViewBag.Total        = total;
             ViewBag.Page         = page;
             ViewBag.SearchString = searchString;
+            ViewBag.SortBy       = sortBy;
+            ViewBag.SortDirection = sortDirection;
             ViewBag.Usuario      = HttpContext.Session.GetString("usuario");
             ViewBag.Rol          = HttpContext.Session.GetString("rol");
 
