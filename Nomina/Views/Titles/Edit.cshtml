@@ -1,0 +1,61 @@
+@model Nomina.Models.TitleListItem
+
+@{
+    ViewData["Title"] = "Editar Cargo";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">✏️ Editar Cargo</h2>
+    <a asp-controller="Titles" asp-action="Details" asp-route-id="@Model.EmpNo"
+       class="btn btn-outline-secondary">← Regresar al historial</a>
+</div>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<div class="card shadow-sm" style="max-width:520px;">
+    <div class="card-header bg-white fw-semibold">
+        @Model.FullName <span class="text-muted fw-normal">— Cédula: @Model.Ci</span>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" asp-controller="Titles" asp-action="Edit">
+            @Html.AntiForgeryToken()
+
+            @* Claves originales para identificar el registro en DB *@
+            <input type="hidden" name="empNo"             value="@Model.EmpNo" />
+            <input type="hidden" name="originalTitle"     value="@Model.TitleName" />
+            <input type="hidden" name="originalFromDate"  value="@Model.FromDate.ToString("yyyy-MM-dd")" />
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Cargo
+                </label>
+                <input type="text" name="newTitle" class="form-control"
+                       required maxlength="50" value="@Model.TitleName" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Desde</label>
+                <input type="text" class="form-control"
+                       value="@Model.FromDate.ToString("dd/MM/yyyy")" readonly />
+                <div class="form-text text-muted">La fecha de inicio no puede modificarse.</div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">
+                    Hasta <span class="text-muted">(dejar vacío si sigue vigente)</span>
+                </label>
+                <input type="date" name="toDate" class="form-control"
+                       value="@(Model.ToDate.HasValue ? Model.ToDate.Value.ToString("yyyy-MM-dd") : "")" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark px-4">Guardar cambios</button>
+                <a asp-controller="Titles" asp-action="Details" asp-route-id="@Model.EmpNo"
+                   class="btn btn-outline-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,153 @@
+@model IEnumerable<Nomina.Models.ActivityLogItem>
+
+@{
+    ViewData["Title"] = "Log de Actividad";
+    int page         = ViewBag.Page;
+    int total        = ViewBag.Total;
+    int pageSize     = ViewBag.PageSize;
+    int pages        = (int)Math.Ceiling((double)total / pageSize);
+    string modFiltro = ViewBag.ModuleFiltro as string;
+}
+
+<style>
+    @@media print {
+        #sidebar, #topbar, .no-print { display: none !important; }
+        #main { margin-left: 0 !important; }
+        body { background: white; }
+    }
+</style>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="mb-0">📋 Log de Actividad</h2>
+        <div class="text-muted small">Registro de accesos y operaciones críticas del sistema</div>
+    </div>
+    <div class="d-flex gap-2 no-print">
+        <button class="btn btn-outline-secondary" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+</div>
+
+<form class="d-flex gap-2 mb-3 no-print" method="get"
+      asp-controller="ActivityLog" asp-action="Index">
+    <select name="module" class="form-select" style="max-width:200px;">
+        <option value="">— Todos los módulos —</option>
+        @foreach (var mod in new[] { "Auth", "Employees", "Departments", "Titles", "Salaries" })
+        {
+            if (modFiltro == mod)
+            {
+                <option value="@mod" selected>@mod</option>
+            }
+            else
+            {
+                <option value="@mod">@mod</option>
+            }
+        }
+    </select>
+    <button class="btn btn-dark" type="submit">Filtrar</button>
+    <a asp-controller="ActivityLog" asp-action="Index" class="btn btn-outline-secondary">Limpiar</a>
+</form>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width:60px;">#</th>
+                        <th style="width:160px;">Fecha</th>
+                        <th style="width:130px;">Usuario</th>
+                        <th style="width:110px;">Módulo</th>
+                        <th style="width:110px;">Acción</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">@item.LogId</td>
+                            <td class="small">@item.ActionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td><span class="badge bg-secondary">@item.UserSession</span></td>
+                            <td>
+                                @{
+                                    string badgeClass = item.Module switch
+                                    {
+                                        "Auth"        => "bg-primary",
+                                        "Employees"   => "bg-success",
+                                        "Salaries"    => "bg-warning text-dark",
+                                        "Departments" => "bg-info text-dark",
+                                        "Titles"      => "bg-dark",
+                                        _             => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @badgeClass">@item.Module</span>
+                            </td>
+                            <td>
+                                @{
+                                    string actionIcon = item.Action switch
+                                    {
+                                        "LOGIN"      => "🔑",
+                                        "LOGOUT"     => "🚪",
+                                        "CREATE"     => "➕",
+                                        "UPDATE"     => "✏️",
+                                        "DEACTIVATE" => "🚫",
+                                        _            => "📌"
+                                    };
+                                }
+                                @actionIcon @item.Action
+                            </td>
+                            <td class="small text-muted">@item.Description</td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                No hay registros de actividad.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center p-3 no-print">
+            <span class="text-muted small">
+                Mostrando @Model.Count() de <strong>@total</strong> registros
+            </span>
+            @if (pages > 1)
+            {
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                        @if (page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link"
+                                   asp-controller="ActivityLog" asp-action="Index"
+                                   asp-route-page="@(page - 1)"
+                                   asp-route-module="@modFiltro">‹</a>
+                            </li>
+                        }
+                        @for (int p = Math.Max(1, page - 2); p <= Math.Min(pages, page + 2); p++)
+                        {
+                            <li class="page-item @(p == page ? "active" : "")">
+                                <a class="page-link"
+                                   asp-controller="ActivityLog" asp-action="Index"
+                                   asp-route-page="@p"
+                                   asp-route-module="@modFiltro">@p</a>
+                            </li>
+                        }
+                        @if (page < pages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link"
+                                   asp-controller="ActivityLog" asp-action="Index"
+                                   asp-route-page="@(page + 1)"
+                                   asp-route-module="@modFiltro">›</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>

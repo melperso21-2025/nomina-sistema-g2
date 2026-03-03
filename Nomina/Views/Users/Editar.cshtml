@@ -1,0 +1,66 @@
+@model Nomina.Models.User
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">✏️ Editar Usuario</h2>
+    <a asp-controller="Users" asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
+</div>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<div class="card shadow-sm" style="max-width:520px;">
+    <div class="card-header bg-white fw-semibold">
+        @(ViewBag.FullName ?? "Empleado")
+        <span class="text-muted fw-normal">— ID: @Model.EmpNo</span>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" asp-controller="Users" asp-action="Editar">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="empNo" value="@Model.EmpNo" />
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Nombre de Usuario
+                </label>
+                <input type="text" name="username" class="form-control"
+                       required maxlength="100" value="@Model.Username" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Nueva Contraseña</label>
+                <input type="password" name="newPassword" class="form-control"
+                       minlength="6" placeholder="Dejar vacío para mantener la actual" />
+                <div class="form-text text-muted">Si no ingresa contraseña, se conserva la actual.</div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Rol
+                </label>
+                @{
+                    bool esRrhh  = Model.Rol == "RRHH";
+                    bool esAdmin = Model.Rol == "Admin";
+                }
+                <select name="rol" class="form-select" required>
+                    <option value="RRHH"  selected="@esRrhh">RRHH</option>
+                    <option value="Admin" selected="@esAdmin">Admin</option>
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark px-4">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Guardar cambios
+                </button>
+                <a asp-controller="Users" asp-action="Index" class="btn btn-outline-secondary px-4">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

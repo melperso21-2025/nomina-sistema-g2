@@ -1,0 +1,95 @@
+﻿
+@model Nomina.Models.EditEmployeeViewModel
+
+@{
+    ViewData["Title"] = "Editar Empleado";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">✏️ Editar Empleado</h2>
+    <a asp-controller="Employees" asp-action="Detalle" asp-route-id="@Model.EmpNo"
+       class="btn btn-outline-secondary">← Volver</a>
+</div>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">⚠️ @ViewBag.Error</div>
+}
+
+<div class="card shadow-sm" style="max-width:560px;">
+    <div class="card-body p-4">
+        <form id="empleadoEditForm" method="post" asp-controller="Employees" asp-action="Editar">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="EmpNo" value="@Model.EmpNo" />
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold"><span class="text-danger">*</span> Nombre</label>
+                <input type="text" name="FirstName" value="@Model.FirstName"
+                       class="form-control" required maxlength="50" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold"><span class="text-danger">*</span> Apellido</label>
+                <input type="text" name="LastName" value="@Model.LastName"
+                       class="form-control" required maxlength="50" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold"><span class="text-danger">*</span> Fecha de nacimiento</label>
+                <input type="date" name="BirthDate" value="@Model.BirthDate.ToString("yyyy-MM-dd")"
+                       class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold"><span class="text-danger">*</span> Género</label>
+                <select name="Gender" class="form-select" required>
+                    <option value="">Seleccionar...</option>
+                    @if (Model.Gender == "M")
+                    {
+                        <option value="M" selected>Masculino</option>
+                        <option value="F">Femenino</option>
+                    }
+                    else
+                    {
+                        <option value="M">Masculino</option>
+                        <option value="F" selected>Femenino</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-semibold"><span class="text-danger">*</span> Correo electrónico</label>
+                <input type="email" name="Email" value="@Model.Email"
+                       class="form-control" required maxlength="100" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark px-4">Guardar cambios</button>
+                <a asp-controller="Employees" asp-action="Detalle" asp-route-id="@Model.EmpNo"
+                   class="btn btn-outline-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        (function() {
+            var form = document.getElementById('empleadoEditForm');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    var email = document.getElementsByName('Email')[0].value.trim();
+                    var errores = [];
+                    var atSymbol = String.fromCharCode(64);
+                    var dotSymbol = '.';
+
+                    if (email.indexOf(atSymbol) === -1 || email.indexOf(dotSymbol) === -1 || email.length < 5) {
+                        errores.push('El correo electrónico no es válido.');
+                    }
+
+                    if (errores.length > 0) {
+                        alert(errores.join('\n'));
+                        e.preventDefault();
+                    }
+                });
+            }
+        })();
+    </script>
+}

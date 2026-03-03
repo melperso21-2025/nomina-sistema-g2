@@ -1,0 +1,77 @@
+@model Nomina.Models.SalaryListItem
+
+@{
+    ViewData["Title"] = "Editar Salario";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">💰 Editar Salario</h2>
+    <a asp-controller="Salaries" asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
+</div>
+
+<div class="card shadow-sm" style="max-width:520px;">
+    <div class="card-body p-4">
+        <form id="salaryEditForm" method="post" asp-controller="Salaries" asp-action="Edit">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id_salary" value="@Model.IdSalario" />
+            <input type="hidden" name="emp_no" value="@Model.EmpNo" />
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold text-muted small">Empleado</label>
+                <p class="fw-semibold mb-0">@Model.FullName <span class="text-muted">(#@Model.EmpNo)</span></p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Nuevo salario
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" name="salary" class="form-control"
+                           required min="1" step="0.01"
+                           value="@Model.Salary" />
+                </div>
+                <div class="form-text text-muted">El SP cierra el salario anterior automáticamente.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Fecha desde
+                </label>
+                <input type="date" name="from_date" class="form-control"
+                       required value="@Model.FromDate.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Fecha hasta <span class="text-muted small">(opcional)</span></label>
+                <input type="date" name="to_date" class="form-control"
+                       value="@(Model.ToDate?.ToString("yyyy-MM-dd") ?? "")" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark px-4">Guardar cambios</button>
+                <a asp-controller="Salaries" asp-action="Index"
+                   class="btn btn-outline-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('salaryEditForm').addEventListener('submit', function (e) {
+            var errors = [];
+            var from = new Date(this.from_date.value);
+            var toVal = this.to_date.value;
+
+            if (!this.salary.value || this.salary.value <= 0) errors.push('El salario debe ser mayor a 0.');
+            if (!this.from_date.value) errors.push('La fecha desde es requerida.');
+            if (toVal && new Date(toVal) < from) errors.push('La fecha hasta no puede ser anterior a la fecha desde.');
+
+            if (errors.length > 0) {
+                alert(errors.join('\n'));
+                e.preventDefault();
+            }
+        });
+    </script>
+}
