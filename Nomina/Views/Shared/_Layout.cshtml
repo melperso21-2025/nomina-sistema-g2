@@ -141,87 +141,51 @@
         <div class="brand">💼 <span>Nómina</span> G2</div>
         <nav>
             <div class="nav-section">Main</div>
-<<<<<<< HEAD
-            <a asp-controller="Dashboard" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
-                🏠 Panel de Control
-            </a>
+<a asp-controller="Dashboard" asp-action="Index"
+   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+    🏠 Panel de Control
+</a>
 
-            <div class="nav-section">Management</div>
-            <a asp-controller="Employees" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Employees" ? "active" : "")">
-                👥 Empleados
-            </a>
-            <a asp-controller="Departments" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Departments" ? "active" : "")">
-                🏢 Departamentos
-            </a>
-            <a asp-controller="Titles" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Titles" ? "active" : "")">
-                🎓 Cargos
-            </a>
+<div class="nav-section">Management</div>
+<a asp-controller="Employees" asp-action="Index"
+   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Employees" ? "active" : "")">
+    👥 Empleados
+</a>
+<a asp-controller="Departments" asp-action="Index"
+   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Departments" ? "active" : "")">
+    🏢 Departamentos
+</a>
+<a asp-controller="Titles" asp-action="Index"
+   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Titles" ? "active" : "")">
+    🎓 Cargos
+</a>
 
-            @if (Context.Session.GetString("rol") == "Admin")
-            {
-            <div class="nav-section">Payroll</div>
-            <a asp-controller="Salaries" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Salaries" ? "active" : "")">
-                 💰 Salarios
-            </a>
-            <a asp-controller="AuditSalaryLog" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditSalaryLog" ? "active" : "")">
-                 📑 Auditoría
-            </a>
+@if (Context.Session.GetString("rol") == "Admin")
+{
+<div class="nav-section">Payroll</div>
+<a asp-controller="Salaries" asp-action="Index"
+   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Salaries" ? "active" : "")">
+     💰 Salarios
+</a>
+<a asp-controller="AuditSalaryLog" asp-action="Index"
+   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditSalaryLog" ? "active" : "")">
+     📑 Auditoría
+</a>
 
-            <div class="nav-section">Reports</div>
-            <a asp-controller="Reports" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
-                 📊 Reportes
-            </a>
+<div class="nav-section">Reports</div>
+<a asp-controller="Reports" asp-action="Index"
+   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
+     📊 Reportes
+</a>
 
-            <div class="nav-section">Administration</div>
-            <a asp-controller="Users" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
-                 👤 Usuarios
-            </a>
-            <a asp-controller="ActivityLog" asp-action="Index"
-               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "ActivityLog" ? "active" : "")">
-                 📋 Log de Actividad
-=======
-            <a href="/Dashboard" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
-                🏠 Dashboard
-            </a>
-
-            <div class="nav-section">Management</div>
-            <a href="/Employees" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Employees" ? "active" : "")">
-                👤 Employees
-            </a>
-            <a href="/Departments" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Departments" ? "active" : "")">
-                🏢 Departments
-            </a>
-            <a href="/Titles" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Titles" ? "active" : "")">
-                🏷️ Titles
-            </a>
-
-            <div class="nav-section">Payroll</div>
-            <a href="/Salaries" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Salaries" ? "active" : "")">
-                💰 Salaries
-            </a>
-            <a href="/AuditSalaryLog" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditSalaryLog" ? "active" : "")">
-                📋 Salary Audit
-            </a>
-
-            <div class="nav-section">Reports</div>
-            <a href="/Reports" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
-                📊 Reports
-            </a>
-
-            @if (Context.Session.GetString("rol") == "Admin")
-            {
-            <div class="nav-section">Administration</div>
-            <a href="/Users" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
-                👥 Users
->>>>>>> origin/develop
+<div class="nav-section">Administration</div>
+<a asp-controller="Users" asp-action="Index"
+   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
+     👤 Usuarios
+</a>
+<a asp-controller="ActivityLog" asp-action="Index"
+   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "ActivityLog" ? "active" : "")">
+     📋 Log de Actividad
             </a>
             }
         </nav>
@@ -239,11 +203,7 @@
         <div id="topbar">
             <div class="page-title">@ViewData["Title"]</div>
             <div class="logout">
-<<<<<<< HEAD
-                <a href="/Account/Logout">Sign out 🚪</a>
-=======
-                <a href="/Account/Logout">Sign out →</a>
->>>>>>> origin/develop
+<a href="/Account/Logout">Sign out 🚪</a>
             </div>
         </div>
         }
@@ -260,11 +220,7 @@
             @if (TempData["Error"] != null)
             {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-<<<<<<< HEAD
-                ❌ @TempData["Error"]
-=======
-                ⚠️ @TempData["Error"]
->>>>>>> origin/develop
+❌ @TempData["Error"]
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             }

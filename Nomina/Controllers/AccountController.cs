@@ -46,29 +46,13 @@ namespace Nomina.Controllers
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand("sp_login", conn))
                     {
-<<<<<<< HEAD
-                        HttpContext.Session.SetString("usuario",   pFullName.Value.ToString());
-                        HttpContext.Session.SetString("rol",       pRole.Value.ToString());
-                        HttpContext.Session.SetInt32("emp_no",     (int)pEmpNo.Value);
-
-                        RegistrarActividad("Auth", "LOGIN", $"Inicio de sesión: {username}");
-                        return RedirectToAction("Index", "Dashboard");
-                    }
-                    else
-                    {
-                        ViewBag.Error = "Usuario o contraseña incorrectos.";
-                        return View();
-=======
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@p_username", username);
-                        
-                        SqlParameter pPasswordHash = new SqlParameter("@p_password_hash", System.Data.SqlDbType.VarBinary);
-                        pPasswordHash.Value = passwordHashBytes;
-                        cmd.Parameters.Add(pPasswordHash);
+                        cmd.Parameters.AddWithValue("@p_username",      username);
+                        cmd.Parameters.AddWithValue("@p_password_hash", passwordHashBytes);
 
-                        SqlParameter pResult = new SqlParameter("@r_result", System.Data.SqlDbType.Int) { Direction = System.Data.ParameterDirection.Output };
-                        SqlParameter pRole = new SqlParameter("@r_role", System.Data.SqlDbType.VarChar, 50) { Direction = System.Data.ParameterDirection.Output };
-                        SqlParameter pEmpNo = new SqlParameter("@r_emp_no", System.Data.SqlDbType.Int) { Direction = System.Data.ParameterDirection.Output };
+                        SqlParameter pResult   = new SqlParameter("@r_result",    System.Data.SqlDbType.Int)          { Direction = System.Data.ParameterDirection.Output };
+                        SqlParameter pRole     = new SqlParameter("@r_role",      System.Data.SqlDbType.VarChar, 50)  { Direction = System.Data.ParameterDirection.Output };
+                        SqlParameter pEmpNo    = new SqlParameter("@r_emp_no",    System.Data.SqlDbType.Int)          { Direction = System.Data.ParameterDirection.Output };
                         SqlParameter pFullName = new SqlParameter("@r_full_name", System.Data.SqlDbType.VarChar, 100) { Direction = System.Data.ParameterDirection.Output };
 
                         cmd.Parameters.Add(pResult);
@@ -82,11 +66,11 @@ namespace Nomina.Controllers
 
                         if (result == 1)
                         {
-                            // Guardar datos en Session
                             HttpContext.Session.SetString("usuario", pFullName.Value?.ToString() ?? "");
-                            HttpContext.Session.SetString("rol", pRole.Value?.ToString() ?? "");
-                            HttpContext.Session.SetInt32("emp_no", (int?)pEmpNo.Value ?? 0);
+                            HttpContext.Session.SetString("rol",     pRole.Value?.ToString()     ?? "");
+                            HttpContext.Session.SetInt32("emp_no",   (int?)pEmpNo.Value ?? 0);
 
+                            RegistrarActividad("Auth", "LOGIN", $"Inicio de sesión: {username}");
                             return RedirectToAction("Index", "Dashboard");
                         }
                         else
@@ -94,7 +78,6 @@ namespace Nomina.Controllers
                             ViewBag.Error = "Usuario o contraseña incorrectos.";
                             return View();
                         }
->>>>>>> origin/develop
                     }
                 }
                 catch (Exception ex)

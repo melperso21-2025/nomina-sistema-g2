@@ -190,67 +190,25 @@ namespace Nomina.Models
 
     public class PayrollReportItem
     {
-<<<<<<< HEAD
-        public string   DeptName    { get; set; }
-        public int      EmpNo       { get; set; }
-        public string   FullName    { get; set; }
-        public string   Ci          { get; set; }
-        public string   Title       { get; set; }
-        public decimal  Salary      { get; set; }
-        public DateTime SalarySince { get; set; }
-=======
-        public string DeptName { get; set; } = string.Empty;
-        public int EmpNo { get; set; } = 0;
-        public string FullName { get; set; } = string.Empty;
-        public string Ci { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
-        public long Salary { get; set; } = 0;
-        public DateTime SalarySince { get; set; } = DateTime.MinValue;
->>>>>>> origin/develop
+public string   DeptName    { get; set; }
+public int      EmpNo       { get; set; }
+public string   FullName    { get; set; }
+public string   Ci          { get; set; }
+public string   Title       { get; set; }
+public decimal  Salary      { get; set; }
+public DateTime SalarySince { get; set; }
     }
 
     public class SalaryChangesReportItem
     {
-<<<<<<< HEAD
-        public int      LogId          { get; set; }
-        public DateTime ActionDate     { get; set; }
-        public string   UserSession    { get; set; }
-        public string   FullName       { get; set; }
-        public string   Ci             { get; set; }
-        public decimal  PreviousSalary { get; set; }
-        public decimal  NewSalary      { get; set; }
-        public DateTime FromDate       { get; set; }
-=======
-        public int LogId { get; set; } = 0;
-        public DateTime ActionDate { get; set; } = DateTime.MinValue;
-        public string UserSession { get; set; } = string.Empty;
-        public string FullName { get; set; } = string.Empty;
-        public string Ci { get; set; } = string.Empty;
-        public long PreviousSalary { get; set; } = 0;
-        public long NewSalary { get; set; } = 0;
-        public DateTime FromDate { get; set; } = DateTime.MinValue;
-    }
-
-    public class ReporteViewModel
-    {
-        public string TipoReporte { get; set; } = string.Empty;
-        public string DeptNo { get; set; } = string.Empty;
-        public string FechaDesde { get; set; } = string.Empty;
-        public string FechaHasta { get; set; } = string.Empty;
-        public List<ReporteItem> Resultados { get; set; } = new();
-        public List<SelectListItem> Departamentos { get; set; } = new();
-    }
-
-    public class ReporteItem
-    {
-        public string DeptName { get; set; } = string.Empty;
-        public string FullName { get; set; } = string.Empty;
-        public string Ci { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
-        public long Salary { get; set; } = 0;
-        public string UserSession { get; set; } = string.Empty;
-        public DateTime ActionDate { get; set; } = DateTime.MinValue;
->>>>>>> origin/develop
+public int      LogId          { get; set; }
+public DateTime ActionDate     { get; set; }
+public string   UserSession    { get; set; }
+public string   FullName       { get; set; }
+public string   Ci             { get; set; }
+public decimal  PreviousSalary { get; set; }
+public decimal  NewSalary      { get; set; }
+public DateTime FromDate       { get; set; }
     }
 
     // ─── SALARIES ────────────────────────────────────────────────
