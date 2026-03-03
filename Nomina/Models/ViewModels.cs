@@ -190,6 +190,15 @@ namespace Nomina.Models
 
     public class PayrollReportItem
     {
+<<<<<<< HEAD
+        public string   DeptName    { get; set; }
+        public int      EmpNo       { get; set; }
+        public string   FullName    { get; set; }
+        public string   Ci          { get; set; }
+        public string   Title       { get; set; }
+        public decimal  Salary      { get; set; }
+        public DateTime SalarySince { get; set; }
+=======
         public string DeptName { get; set; } = string.Empty;
         public int EmpNo { get; set; } = 0;
         public string FullName { get; set; } = string.Empty;
@@ -197,10 +206,21 @@ namespace Nomina.Models
         public string Title { get; set; } = string.Empty;
         public long Salary { get; set; } = 0;
         public DateTime SalarySince { get; set; } = DateTime.MinValue;
+>>>>>>> origin/develop
     }
 
     public class SalaryChangesReportItem
     {
+<<<<<<< HEAD
+        public int      LogId          { get; set; }
+        public DateTime ActionDate     { get; set; }
+        public string   UserSession    { get; set; }
+        public string   FullName       { get; set; }
+        public string   Ci             { get; set; }
+        public decimal  PreviousSalary { get; set; }
+        public decimal  NewSalary      { get; set; }
+        public DateTime FromDate       { get; set; }
+=======
         public int LogId { get; set; } = 0;
         public DateTime ActionDate { get; set; } = DateTime.MinValue;
         public string UserSession { get; set; } = string.Empty;
@@ -230,5 +250,51 @@ namespace Nomina.Models
         public long Salary { get; set; } = 0;
         public string UserSession { get; set; } = string.Empty;
         public DateTime ActionDate { get; set; } = DateTime.MinValue;
+>>>>>>> origin/develop
+    }
+
+    // ─── SALARIES ────────────────────────────────────────────────
+
+    public class SalaryListItem
+    {
+        public int       IdSalario { get; set; }
+        public int       EmpNo     { get; set; }
+        public string    FullName  { get; set; }
+        public decimal   Salary    { get; set; }
+        public DateTime  FromDate  { get; set; }
+        public DateTime? ToDate    { get; set; }
+    }
+
+    // ─── CARGOS (TITLES) ────────────────────────────────────────
+
+    public class TitleListItem
+    {
+        public int       EmpNo     { get; set; }
+        public string    FullName  { get; set; }
+        public string    Ci        { get; set; }
+        public string    TitleName { get; set; }
+        public DateTime  FromDate  { get; set; }
+        public DateTime? ToDate    { get; set; }
+    }
+
+    // ─── REPORTES — ESTRUCTURA ORGANIZACIONAL ───────────────────
+
+    public class OrgChartItem
+    {
+        public string DeptName      { get; set; }
+        public string ManagerName   { get; set; }
+        public int    EmployeeCount { get; set; }
+    }
+
+    // ─── LOG DE ACTIVIDAD ────────────────────────────────────────
+
+    public class ActivityLogItem
+    {
+        public int      LogId       { get; set; }
+        public DateTime ActionDate  { get; set; }
+        public string   UserSession { get; set; }
+        public string   Module      { get; set; }
+        public string   Action      { get; set; }
+        public string   Description { get; set; }
     }
 }

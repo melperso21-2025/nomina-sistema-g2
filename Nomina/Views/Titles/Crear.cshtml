@@ -1,0 +1,62 @@
+@{
+    ViewData["Title"] = "Asignar Cargo";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="mb-0">🏷️ Asignar Cargo</h2>
+    <a asp-controller="Titles" asp-action="Index" class="btn btn-outline-secondary">← Regresar a la lista</a>
+</div>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<div class="card shadow-sm" style="max-width:520px;">
+    <div class="card-body p-4">
+        <form method="post" asp-controller="Titles" asp-action="Crear">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Empleado
+                </label>
+                <select name="empNo" class="form-select" required>
+                    <option value="">Seleccionar empleado...</option>
+                    @foreach (var emp in ViewBag.Empleados as IEnumerable<Nomina.Models.EmployeeListItem>)
+                    {
+                        <option value="@emp.EmpNo">@emp.FullName (@emp.Ci)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Cargo
+                </label>
+                <input type="text" name="title" class="form-control"
+                       required maxlength="50" placeholder="Ej: Analista Senior" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Desde
+                </label>
+                <input type="date" name="fromDate" class="form-control" required />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">
+                    Hasta <span class="text-muted">(dejar vacío si es vigente)</span>
+                </label>
+                <input type="date" name="toDate" class="form-control" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark px-4">Guardar cargo</button>
+                <a asp-controller="Titles" asp-action="Index"
+                   class="btn btn-outline-secondary px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -6,11 +6,11 @@ using Nomina.Models;
 
 namespace Nomina.Controllers
 {
-    public class EmpleadosController : Controller
+    public class EmployeesController : Controller
     {
         private readonly IConfiguration _config;
 
-        public EmpleadosController(IConfiguration config)
+        public EmployeesController(IConfiguration config)
         {
             _config = config;
         }
@@ -21,31 +21,54 @@ namespace Nomina.Controllers
         }
 
         // GET: /Empleados
-        public IActionResult Index(string filterName = null, string filterCi = null, int page = 1)
+        public IActionResult Index(string searchString = null, int page = 1)
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
             var empleados = new List<EmployeeListItem>();
-            int total = 0;
+            int total    = 0;
+            int pageSize = 20;
             string connStr = _config.GetConnectionString("NominaDB");
+
+            const string baseFrom = @"
+                FROM employees e
+                LEFT JOIN dept_emp   de ON e.emp_no = de.emp_no   AND de.to_date IS NULL
+                LEFT JOIN departments d  ON de.dept_no = d.dept_no
+                WHERE e.is_active = 1
+                  AND (@search IS NULL
+                       OR e.first_name LIKE '%' + @search + '%'
+                       OR e.last_name  LIKE '%' + @search + '%'
+                       OR e.ci         LIKE '%' + @search + '%')";
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
-                using (SqlCommand cmd = new SqlCommand("sp_list_employees", conn))
+
+                // Total de registros para paginación
+                using (SqlCommand countCmd = new SqlCommand("SELECT COUNT(*) " + baseFrom, conn))
                 {
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    countCmd.Parameters.AddWithValue("@search",
+                        string.IsNullOrWhiteSpace(searchString) ? (object)DBNull.Value : searchString);
+                    total = (int)countCmd.ExecuteScalar();
+                }
 
-                    cmd.Parameters.AddWithValue("@p_filter_name", string.IsNullOrEmpty(filterName) ? (object)DBNull.Value : filterName);
-                    cmd.Parameters.AddWithValue("@p_filter_ci",   string.IsNullOrEmpty(filterCi)   ? (object)DBNull.Value : filterCi);
-                    cmd.Parameters.AddWithValue("@p_dept_no",     DBNull.Value);
-                    cmd.Parameters.AddWithValue("@p_page",        page);
-                    cmd.Parameters.AddWithValue("@p_page_size",   20);
+                // Página de datos
+                string dataSql = @"
+                    SELECT e.emp_no, e.ci,
+                           e.first_name + ' ' + e.last_name AS full_name,
+                           e.email, e.hire_date, e.gender,
+                           ISNULL(d.dept_name, 'Sin departamento') AS dept_name
+                    " + baseFrom + @"
+                    ORDER BY e.last_name, e.first_name
+                    OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
 
-                    SqlParameter pTotal = new SqlParameter("@r_total", System.Data.SqlDbType.Int)
-                    { Direction = System.Data.ParameterDirection.Output };
-                    cmd.Parameters.Add(pTotal);
+                using (SqlCommand cmd = new SqlCommand(dataSql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@search",
+                        string.IsNullOrWhiteSpace(searchString) ? (object)DBNull.Value : searchString);
+                    cmd.Parameters.AddWithValue("@offset",   (page - 1) * pageSize);
+                    cmd.Parameters.AddWithValue("@pageSize", pageSize);
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -59,21 +82,18 @@ namespace Nomina.Controllers
                                 Email    = reader.GetString(3),
                                 HireDate = reader.GetDateTime(4),
                                 Gender   = reader.GetString(5),
-                                DeptName = reader.IsDBNull(6) ? "Sin departamento" : reader.GetString(6)
+                                DeptName = reader.GetString(6)
                             });
                         }
                     }
-
-                    total = (int)pTotal.Value;
                 }
             }
 
-            ViewBag.Total      = total;
-            ViewBag.Page       = page;
-            ViewBag.FilterName = filterName;
-            ViewBag.FilterCi   = filterCi;
-            ViewBag.Usuario    = HttpContext.Session.GetString("usuario");
-            ViewBag.Rol        = HttpContext.Session.GetString("rol");
+            ViewBag.Total        = total;
+            ViewBag.Page         = page;
+            ViewBag.SearchString = searchString;
+            ViewBag.Usuario      = HttpContext.Session.GetString("usuario");
+            ViewBag.Rol          = HttpContext.Session.GetString("rol");
 
             return View(empleados);
         }
@@ -124,6 +144,7 @@ namespace Nomina.Controllers
             if (detalle == null)
                 return NotFound();
 
+            CargarDepartamentos();
             ViewBag.Usuario = HttpContext.Session.GetString("usuario");
             ViewBag.Rol     = HttpContext.Session.GetString("rol");
             return View(detalle);
@@ -135,7 +156,24 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
+
             CargarDepartamentos();
+
+            string connStr = _config.GetConnectionString("NominaDB");
+            using (var conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand("SELECT ISNULL(MAX(emp_no), 0) + 1 FROM employees", conn))
+                {
+                    ViewBag.NextEmpNo = (int)cmd.ExecuteScalar();
+                }
+            }
+
             ViewBag.Usuario = HttpContext.Session.GetString("usuario");
             return View();
         }
@@ -146,6 +184,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -188,6 +232,7 @@ namespace Nomina.Controllers
                     string message = pMessage.Value.ToString();
                     if (message.StartsWith("SUCCESS"))
                     {
+                        RegistrarActividad("Employees", "CREATE", $"Empleado creado: emp_no={model.EmpNo}, CI={model.Ci}");
                         TempData["Exito"] = "Empleado registrado correctamente.";
                         return RedirectToAction("Index");
                     }
@@ -206,6 +251,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
 
             EditEmployeeViewModel model = null;
             string connStr = _config.GetConnectionString("NominaDB");
@@ -248,6 +299,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
 
             if (!ModelState.IsValid)
                 return View(model);
@@ -296,6 +353,12 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (HttpContext.Session.GetString("rol") != "Admin")
+            {
+                TempData["Error"] = "Acceso denegado. Solo administradores.";
+                return RedirectToAction("Index");
+            }
+
             string connStr = _config.GetConnectionString("NominaDB");
 
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -314,7 +377,10 @@ namespace Nomina.Controllers
 
                     string message = pMessage.Value.ToString();
                     if (message.StartsWith("SUCCESS"))
+                    {
+                        RegistrarActividad("Employees", "DEACTIVATE", $"Empleado desactivado: emp_no={id}");
                         TempData["Exito"] = "Empleado desactivado correctamente.";
+                    }
                     else
                         TempData["Error"] = message.Replace("ERROR: ", "");
                 }
@@ -357,7 +423,10 @@ namespace Nomina.Controllers
 
                     string message = pMessage.Value.ToString();
                     if (message.StartsWith("SUCCESS"))
+                    {
+                        RegistrarActividad("Salaries", "UPDATE", $"Salario actualizado: emp_no={empNo}, monto={salary}");
                         TempData["Exito"] = "Salario actualizado correctamente.";
+                    }
                     else
                         TempData["Error"] = message.Replace("ERROR: ", "");
                 }
@@ -374,6 +443,12 @@ namespace Nomina.Controllers
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
+
+            if (toDate.HasValue && toDate.Value < fromDate)
+            {
+                TempData["Error"] = "La fecha de fin no puede ser anterior a la fecha de inicio.";
+                return RedirectToAction("Detalle", new { id = empNo });
+            }
 
             string connStr = _config.GetConnectionString("NominaDB");
 
@@ -415,6 +490,12 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (toDate.HasValue && toDate.Value < fromDate)
+            {
+                TempData["Error"] = "La fecha de fin no puede ser anterior a la fecha de inicio.";
+                return RedirectToAction("Detalle", new { id = empNo });
+            }
+
             string connStr = _config.GetConnectionString("NominaDB");
 
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -455,6 +536,12 @@ namespace Nomina.Controllers
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
 
+            if (toDate.HasValue && toDate.Value < fromDate)
+            {
+                TempData["Error"] = "La fecha de fin no puede ser anterior a la fecha de inicio.";
+                return RedirectToAction("Detalle", new { id = empNo });
+            }
+
             string connStr = _config.GetConnectionString("NominaDB");
 
             using (SqlConnection conn = new SqlConnection(connStr))
@@ -488,6 +575,25 @@ namespace Nomina.Controllers
 
         // ─── HELPERS ────────────────────────────────────────────
 
+        private void RegistrarActividad(string module, string action, string description = null)
+        {
+            try
+            {
+                string user    = HttpContext.Session.GetString("usuario") ?? "sistema";
+                string connStr = _config.GetConnectionString("NominaDB");
+                using SqlConnection conn = new SqlConnection(connStr);
+                conn.Open();
+                using SqlCommand cmd = new SqlCommand(
+                    "INSERT INTO activity_log (user_session, module, action, description) VALUES (@u, @m, @a, @d)", conn);
+                cmd.Parameters.AddWithValue("@u", user);
+                cmd.Parameters.AddWithValue("@m", module);
+                cmd.Parameters.AddWithValue("@a", action);
+                cmd.Parameters.AddWithValue("@d", (object)description ?? DBNull.Value);
+                cmd.ExecuteNonQuery();
+            }
+            catch { /* No bloquear flujo principal */ }
+        }
+
         private void CargarDepartamentos()
         {
             var departamentos = new List<DepartmentItem>();
@@ -503,8 +609,8 @@ namespace Nomina.Controllers
                     {
                         departamentos.Add(new DepartmentItem
                         {
-                            DeptNo   = reader.GetString(0),
-                            DeptName = reader.GetString(1)
+                            DeptNo = reader.GetValue(0).ToString(),
+                            DeptName = reader.GetValue(1).ToString()
                         });
                     }
                 }

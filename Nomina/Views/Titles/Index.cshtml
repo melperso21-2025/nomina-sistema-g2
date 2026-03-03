@@ -1,9 +1,122 @@
+<<<<<<< HEAD
+@model IEnumerable<Nomina.Models.TitleListItem>
+
+@{
+    ViewData["Title"] = "Cargos";
+}
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Exito"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+=======
 ﻿@{
     ViewData["Title"] = "Titles";
+>>>>>>> origin/develop
 }
 
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
+<<<<<<< HEAD
+        <h2 class="mb-0">🏷️ Cargos / Puestos</h2>
+        <div class="text-muted small">Total: @ViewBag.Total</div>
+    </div>
+    @if (Context.Session.GetString("rol") == "Admin")
+    {
+        <a class="btn btn-dark" asp-controller="Titles" asp-action="Crear">+ Asignar cargo</a>
+    }
+</div>
+
+@* Buscador *@
+<form method="get" asp-controller="Titles" asp-action="Index" class="card shadow-sm mb-3">
+    <div class="card-body d-flex gap-2 flex-wrap align-items-end">
+        <div>
+            <label class="form-label fw-semibold mb-1">Buscar por cargo, empleado o cédula</label>
+            <input type="text" name="searchString" value="@ViewBag.SearchString"
+                   class="form-control" style="min-width:280px;" placeholder="Ej: Analista o García" />
+        </div>
+        <button type="submit" class="btn btn-dark">🔍 Buscar</button>
+        <a asp-controller="Titles" asp-action="Index" class="btn btn-outline-secondary">Limpiar</a>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width:80px;">N° Emp.</th>
+                        <th>Empleado</th>
+                        <th style="width:120px;">Cédula</th>
+                        <th>Cargo</th>
+                        <th style="width:120px;">Desde</th>
+                        <th style="width:120px;">Hasta</th>
+                        <th class="text-end" style="width:120px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">@t.EmpNo</td>
+                            <td class="fw-semibold">@t.FullName</td>
+                            <td>@t.Ci</td>
+                            <td>@t.TitleName</td>
+                            <td>@t.FromDate.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (t.ToDate == null)
+                                { <span class="badge bg-success">Vigente</span> }
+                                else
+                                { @t.ToDate.Value.ToString("dd/MM/yyyy") }
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary"
+                                   asp-controller="Titles" asp-action="Details"
+                                   asp-route-id="@t.EmpNo">Ver</a>
+                                @if (Context.Session.GetString("rol") == "Admin")
+                                {
+                                    <a class="btn btn-sm btn-dark"
+                                       asp-controller="Titles" asp-action="Edit"
+                                       asp-route-id="@t.EmpNo">Editar</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center px-3 py-2">
+            <small class="text-muted">
+                Mostrando @((ViewBag.Page - 1) * 20 + 1)–@(Math.Min((int)ViewBag.Page * 20, (int)ViewBag.Total)) de @ViewBag.Total cargos
+            </small>
+            <div class="d-flex gap-2">
+                @if (ViewBag.Page > 1)
+                {
+                    <a class="btn btn-sm btn-outline-secondary"
+                       asp-controller="Titles" asp-action="Index"
+                       asp-route-page="@(ViewBag.Page - 1)"
+                       asp-route-searchString="@ViewBag.SearchString">← Anterior</a>
+                }
+                @if ((int)ViewBag.Total > (int)ViewBag.Page * 20)
+                {
+                    <a class="btn btn-sm btn-outline-secondary"
+                       asp-controller="Titles" asp-action="Index"
+                       asp-route-page="@(ViewBag.Page + 1)"
+                       asp-route-searchString="@ViewBag.SearchString">Siguiente →</a>
+                }
+            </div>
+        </div>
+=======
         <h2 class="mb-0">🏷️ Titles</h2>
         <div class="text-muted small">Test data</div>
     </div>
@@ -39,5 +152,6 @@
             </table>
         </div>
         <div class="text-muted small p-3">Test data only.</div>
+>>>>>>> origin/develop
     </div>
 </div>

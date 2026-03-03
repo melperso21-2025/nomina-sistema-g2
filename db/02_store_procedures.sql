@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+﻿-- =============================================
+=======
+<<<<<<< HEAD
 ﻿
 =======
 >>>>>>> develop
 -- =============================================
+>>>>>>> origin/develop
 -- 02_STORE_PROCEDURES.SQL
 -- Sistema de Nomina G2
 -- Ejecutar DESPUES de 01_tablas.sql
@@ -525,7 +529,7 @@ BEGIN
     SELECT
         sal.log_id,
         sal.action_date,
-        sal.user_session,
+        RTRIM(CONVERT(NVARCHAR(200), sal.user_session)) AS user_session,
         e.first_name + ' ' + e.last_name AS full_name,
         e.ci,
         sal.previous_salary,

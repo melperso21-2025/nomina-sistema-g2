@@ -1,0 +1,49 @@
+@model IEnumerable<Nomina.Models.LogAuditory>
+
+@{
+    ViewData["Title"] = "Salary Audit";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="mb-0">📑 Salary Audit</h2>
+        <div class="text-muted small">Read-only salary change log</div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:70px;">#</th>
+                        <th style="width:80px;">Emp #</th>
+                        <th>Previous salary</th>
+                        <th>New salary</th>
+                        <th style="width:130px;">From date</th>
+                        <th style="width:160px;">Action date</th>
+                        <th>User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">@log.IdLog</td>
+                            <td>@log.EmpNo</td>
+                            <td class="text-muted">
+                                @(log.SalarioAnterior.HasValue ? log.SalarioAnterior.Value.ToString("C") : "—")
+                            </td>
+                            <td class="fw-semibold text-success">@log.SalarioNuevo.ToString("C")</td>
+                            <td>@log.FechaCambio.ToString("yyyy-MM-dd")</td>
+                            <td>@log.ActionDate.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td><span class="badge bg-secondary">@log.UserResponsable</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small p-3">Records: @(Model?.Count() ?? 0) (last 100)</div>
+    </div>
+</div>

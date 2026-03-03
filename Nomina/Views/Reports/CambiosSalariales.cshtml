@@ -1,0 +1,85 @@
+@model IEnumerable<Nomina.Models.SalaryChangesReportItem>
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Reporte de Cambios Salariales";
+    var usd = new CultureInfo("en-US");
+}
+
+<style>
+    @@media print {
+        #sidebar, #topbar, .no-print { display: none !important; }
+        #main { margin-left: 0 !important; }
+        body { background: white; }
+        .card { border: none !important; box-shadow: none !important; }
+    }
+</style>
+
+<div class="d-flex align-items-center justify-content-between mb-3 no-print">
+    <div>
+        <h2 class="mb-0">📈 Reporte de Cambios Salariales</h2>
+        <div class="text-muted small">Historial de cambios salariales</div>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Reports" asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
+        <button class="btn btn-dark" onclick="window.print()">🖨️ Generar PDF / Imprimir</button>
+    </div>
+</div>
+
+<form class="row g-2 mb-3 no-print" method="get"
+      asp-controller="Reports" asp-action="CambiosSalariales">
+    <div class="col-auto">
+        <input type="date" name="dateFrom" class="form-control"
+               value="@ViewBag.DateFrom" placeholder="Desde" />
+    </div>
+    <div class="col-auto">
+        <input type="date" name="dateTo" class="form-control"
+               value="@ViewBag.DateTo" placeholder="Hasta" />
+    </div>
+    <div class="col-auto">
+        <input type="text" name="ci" class="form-control"
+               value="@ViewBag.Ci" placeholder="Cédula" style="width:160px;" />
+    </div>
+    <div class="col-auto d-flex gap-2">
+        <button class="btn btn-dark" type="submit">Filtrar</button>
+        <a asp-controller="Reports" asp-action="CambiosSalariales"
+           class="btn btn-outline-secondary">Limpiar</a>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width:70px;">#</th>
+                        <th style="width:160px;">Fecha</th>
+                        <th>Empleado</th>
+                        <th>Cédula</th>
+                        <th class="text-center">Salario anterior</th>
+                        <th class="text-center">Salario nuevo</th>
+                        <th style="width:130px;">Desde</th>
+                        <th>Usuario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-muted">@item.LogId</td>
+                            <td>@item.ActionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="fw-semibold">@item.FullName</td>
+                            <td>@item.Ci</td>
+                            <td class="text-muted text-end">@item.PreviousSalary.ToString("C", usd)</td>
+                            <td class="fw-semibold text-success text-end">@item.NewSalary.ToString("C", usd)</td>
+                            <td>@item.FromDate.ToString("dd/MM/yyyy")</td>
+                            <td><span class="badge bg-secondary">@(new string(item.UserSession.Where(ch => ch >= ' ' && ch != '\uFFFD').ToArray()))</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small p-3">Registros: @(Model?.Count() ?? 0)</div>
+    </div>
+</div>

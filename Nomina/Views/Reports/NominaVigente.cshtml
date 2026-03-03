@@ -1,0 +1,110 @@
+@model IEnumerable<Nomina.Models.PayrollReportItem>
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Reporte de Nómina Vigente";
+    var usd = new CultureInfo("en-US");
+}
+
+<style>
+    @@media print {
+        .sidebar, .navbar, .btn { display: none; }
+        #main { margin-left: 0 !important; }
+        body { background: white; }
+        .card { border: none !important; box-shadow: none !important; }
+        .no-print { display: none !important; }
+    }
+</style>
+
+<div class="d-flex align-items-center justify-content-between mb-3 no-print">
+    <div>
+        <h2 class="mb-0">📋 Reporte de Nómina Vigente</h2>
+        <div class="text-muted small">Salarios activos por departamento</div>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Reports" asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
+        <button class="btn btn-success" onclick="window.print()">🖨️ Generar PDF / Imprimir</button>
+    </div>
+</div>
+
+<form class="d-flex gap-2 mb-3 no-print" method="get"
+      asp-controller="Reports" asp-action="NominaVigente">
+    <select name="deptNo" class="form-select" style="max-width:240px;">
+        <option value="">— Todos los departamentos —</option>
+        @foreach (var d in (IEnumerable<Nomina.Models.DepartmentItem>)ViewBag.Departamentos)
+        {
+            if (ViewBag.DeptNoSeleccionado == d.DeptNo)
+            {
+                <option value="@d.DeptNo" selected>@d.DeptName</option>
+            }
+            else
+            {
+                <option value="@d.DeptNo">@d.DeptName</option>
+            }
+        }
+    </select>
+    <button class="btn btn-dark" type="submit">Filtrar</button>
+</form>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Departamento</th>
+                        <th style="width:80px;">N° Emp.</th>
+                        <th>Empleado</th>
+                        <th>Cédula</th>
+                        <th>Cargo</th>
+                        <th class="text-center">Salario</th>
+                        <th style="width:130px;">Desde</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><span class="badge bg-primary">@item.DeptName</span></td>
+                            <td class="text-muted">@item.EmpNo</td>
+                            <td class="fw-semibold">@item.FullName</td>
+                            <td>@item.Ci</td>
+                            <td>@item.Title</td>
+                            <td class="fw-semibold text-success text-end">@item.Salary.ToString("C", usd)</td>
+                            <td>@item.SalarySince.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small p-3 d-flex justify-content-between">
+            <span>Total de empleados: <strong>@(Model?.Count() ?? 0)</strong></span>
+            <span class="fw-semibold">Total nómina: <strong>@(Model?.Sum(x => x.Salary).ToString("C", usd) ?? "$0.00")</strong></span>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Usamos @@media para que el motor de C# (Razor) no se confunda */
+    @@media print {
+        /* Ocultar el menú lateral, la barra superior y los botones */
+        #sidebar, #topbar, .btn, footer {
+            display: none !important;
+        }
+        /* Hacer que el contenido principal ocupe toda la hoja */
+        #main, #content, .container, .container-fluid {
+            margin-left: 0 !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        /* Opciones extra para que la tabla se vea mejor en PDF */
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+        /* Evitar que una fila se corte por la mitad entre dos páginas */
+        tr {
+            page-break-inside: avoid;
+        }
+    }
+</style>

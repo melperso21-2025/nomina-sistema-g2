@@ -46,6 +46,19 @@ namespace Nomina.Controllers
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand("sp_login", conn))
                     {
+<<<<<<< HEAD
+                        HttpContext.Session.SetString("usuario",   pFullName.Value.ToString());
+                        HttpContext.Session.SetString("rol",       pRole.Value.ToString());
+                        HttpContext.Session.SetInt32("emp_no",     (int)pEmpNo.Value);
+
+                        RegistrarActividad("Auth", "LOGIN", $"Inicio de sesión: {username}");
+                        return RedirectToAction("Index", "Dashboard");
+                    }
+                    else
+                    {
+                        ViewBag.Error = "Usuario o contraseña incorrectos.";
+                        return View();
+=======
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@p_username", username);
                         
@@ -81,6 +94,7 @@ namespace Nomina.Controllers
                             ViewBag.Error = "Usuario o contraseña incorrectos.";
                             return View();
                         }
+>>>>>>> origin/develop
                     }
                 }
                 catch (Exception ex)
@@ -94,8 +108,29 @@ namespace Nomina.Controllers
         // GET: /Account/Logout
         public IActionResult Logout()
         {
+            string nombreUsuario = HttpContext.Session.GetString("usuario");
+            RegistrarActividad("Auth", "LOGOUT", $"Cierre de sesión: {nombreUsuario}");
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
+        }
+
+        private void RegistrarActividad(string module, string action, string description = null)
+        {
+            try
+            {
+                string user    = HttpContext.Session.GetString("usuario") ?? "sistema";
+                string connStr = _config.GetConnectionString("NominaDB");
+                using SqlConnection conn = new SqlConnection(connStr);
+                conn.Open();
+                using SqlCommand cmd = new SqlCommand(
+                    "INSERT INTO activity_log (user_session, module, action, description) VALUES (@u, @m, @a, @d)", conn);
+                cmd.Parameters.AddWithValue("@u", user);
+                cmd.Parameters.AddWithValue("@m", module);
+                cmd.Parameters.AddWithValue("@a", action);
+                cmd.Parameters.AddWithValue("@d", (object)description ?? DBNull.Value);
+                cmd.ExecuteNonQuery();
+            }
+            catch { /* No bloquear flujo principal */ }
         }
     }
 }
