@@ -141,10 +141,21 @@ namespace Nomina.Controllers
                 return RedirectToAction("Index");
             }
 
+            string connStr = _config.GetConnectionString("NominaDB");
+            using (var conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(
+                    "SELECT ISNULL(MAX(CAST(dept_no AS INT)), 0) FROM departments", conn))
+                {
+                    int max = Convert.ToInt32(cmd.ExecuteScalar());
+                    ViewBag.NextDeptNo = (max + 1).ToString();
+                }
+            }
+
             return View();
         }
 
-        // POST: /Departments/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Crear(string dept_no, string dept_name)
@@ -159,32 +170,40 @@ namespace Nomina.Controllers
             }
 
             string connStr = _config.GetConnectionString("NominaDB");
-            using (SqlConnection conn = new SqlConnection(connStr))
+            try
             {
-                conn.Open();
-                using (SqlCommand cmd = new SqlCommand("sp_insert_department", conn))
+                using (SqlConnection conn = new SqlConnection(connStr))
                 {
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@p_dept_no",   dept_no);
-                    cmd.Parameters.AddWithValue("@p_dept_name", dept_name);
-
-                    SqlParameter pMsg = new SqlParameter("@r_message", System.Data.SqlDbType.VarChar, 200)
-                    { Direction = System.Data.ParameterDirection.Output };
-                    cmd.Parameters.Add(pMsg);
-
-                    cmd.ExecuteNonQuery();
-
-                    string msg = pMsg.Value?.ToString() ?? string.Empty;
-                    if (msg.StartsWith("SUCCESS"))
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("sp_insert_department", conn))
                     {
-                        RegistrarActividad("Departments", "CREATE", $"Departamento creado: {dept_no} - {dept_name}");
-                        TempData["Exito"] = "Departamento creado correctamente.";
-                        return RedirectToAction("Index");
-                    }
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@p_dept_no",   dept_no);
+                        cmd.Parameters.AddWithValue("@p_dept_name", dept_name);
 
-                    ViewBag.Error = msg.Replace("ERROR: ", "");
-                    return View();
+                        SqlParameter pMsg = new SqlParameter("@r_message", System.Data.SqlDbType.VarChar, 200)
+                        { Direction = System.Data.ParameterDirection.Output };
+                        cmd.Parameters.Add(pMsg);
+
+                        cmd.ExecuteNonQuery();
+
+                        string msg = pMsg.Value?.ToString() ?? string.Empty;
+                        if (msg.StartsWith("SUCCESS"))
+                        {
+                            RegistrarActividad("Departments", "CREATE", $"Departamento creado: {dept_no} - {dept_name}");
+                            TempData["Exito"] = "Departamento creado correctamente.";
+                            return RedirectToAction("Index");
+                        }
+
+                        ViewBag.Error = msg.Replace("ERROR: ", "");
+                        return View();
+                    }
                 }
+            }
+            catch (SqlException ex)
+            {
+                ViewBag.Error = $"Error de base de datos: {ex.Message}";
+                return View();
             }
         }
 
@@ -253,32 +272,40 @@ namespace Nomina.Controllers
             }
 
             string connStr = _config.GetConnectionString("NominaDB");
-            using (SqlConnection conn = new SqlConnection(connStr))
+            try
             {
-                conn.Open();
-                using (SqlCommand cmd = new SqlCommand("sp_update_department", conn))
+                using (SqlConnection conn = new SqlConnection(connStr))
                 {
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@p_dept_no",   dept_no);
-                    cmd.Parameters.AddWithValue("@p_dept_name", dept_name);
-
-                    SqlParameter pMsg = new SqlParameter("@r_message", System.Data.SqlDbType.VarChar, 200)
-                    { Direction = System.Data.ParameterDirection.Output };
-                    cmd.Parameters.Add(pMsg);
-
-                    cmd.ExecuteNonQuery();
-
-                    string msg = pMsg.Value?.ToString() ?? string.Empty;
-                    if (msg.StartsWith("SUCCESS"))
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("sp_update_department", conn))
                     {
-                        RegistrarActividad("Departments", "UPDATE", $"Departamento actualizado: {dept_no} - {dept_name}");
-                        TempData["Exito"] = "Departamento actualizado correctamente.";
-                        return RedirectToAction("Index");
-                    }
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@p_dept_no",   dept_no);
+                        cmd.Parameters.AddWithValue("@p_dept_name", dept_name);
 
-                    ViewBag.Error = msg.Replace("ERROR: ", "");
-                    return View(new Department { DeptNo = dept_no, DeptName = dept_name });
+                        SqlParameter pMsg = new SqlParameter("@r_message", System.Data.SqlDbType.VarChar, 200)
+                        { Direction = System.Data.ParameterDirection.Output };
+                        cmd.Parameters.Add(pMsg);
+
+                        cmd.ExecuteNonQuery();
+
+                        string msg = pMsg.Value?.ToString() ?? string.Empty;
+                        if (msg.StartsWith("SUCCESS"))
+                        {
+                            RegistrarActividad("Departments", "UPDATE", $"Departamento actualizado: {dept_no} - {dept_name}");
+                            TempData["Exito"] = "Departamento actualizado correctamente.";
+                            return RedirectToAction("Index");
+                        }
+
+                        ViewBag.Error = msg.Replace("ERROR: ", "");
+                        return View(new Department { DeptNo = dept_no, DeptName = dept_name });
+                    }
                 }
+            }
+            catch (SqlException ex)
+            {
+                ViewBag.Error = $"Error de base de datos: {ex.Message}";
+                return View(new Department { DeptNo = dept_no, DeptName = dept_name });
             }
         }
 

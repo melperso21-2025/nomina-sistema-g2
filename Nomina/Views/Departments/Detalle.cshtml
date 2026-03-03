@@ -22,8 +22,11 @@
 <div class="d-flex align-items-center justify-content-between mb-4">
     <h2 class="mb-0">🏢 Detalle del Departamento</h2>
     <div class="d-flex gap-2">
-        <a asp-controller="Departments" asp-action="Editar" asp-route-id="@Model.DeptNo"
-           class="btn btn-dark">Editar</a>
+        @if (Context.Session.GetString("rol") == "Admin")
+        {
+            <a asp-controller="Departments" asp-action="Editar" asp-route-id="@Model.DeptNo"
+               class="btn btn-dark">Editar</a>
+        }
         <a asp-controller="Departments" asp-action="Index"
            class="btn btn-outline-secondary">← Regresar a la lista</a>
     </div>

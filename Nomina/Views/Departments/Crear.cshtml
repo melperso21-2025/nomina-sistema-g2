@@ -1,10 +1,10 @@
-﻿@{
+@{
     ViewData["Title"] = "Nuevo Departamento";
 }
 
 <div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="mb-0">?? Nuevo Departamento</h2>
-    <a asp-controller="Departments" asp-action="Index" class="btn btn-outline-secondary">? Volver</a>
+    <h2 class="mb-0">🏢 Nuevo Departamento</h2>
+    <a asp-controller="Departments" asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
 </div>
 
 <div class="card shadow-sm" style="max-width:520px;">
@@ -13,20 +13,17 @@
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
-                <label class="form-label fw-semibold">
-                    <span class="text-danger">?</span> C�digo (dept_no)
-                </label>
-                <input type="text" name="dept_no" class="form-control"
-                       required maxlength="4" placeholder="d010" />
-                <div class="form-text">M�ximo 4 caracteres. Ej: d010</div>
+                <label class="form-label fw-semibold">Código (dept_no)</label>
+                <input type="text" name="dept_no" class="form-control bg-light"
+                       value="@ViewBag.NextDeptNo" readonly />
             </div>
 
             <div class="mb-4">
                 <label class="form-label fw-semibold">
-                    <span class="text-danger">?</span> Nombre del departamento
+                    <span class="text-danger">*</span> Nombre del departamento
                 </label>
                 <input type="text" name="dept_name" class="form-control"
-                       required maxlength="40" placeholder="Tecnolog�a" />
+                       required maxlength="40" placeholder="Tecnología" />
             </div>
 
             <div class="d-flex gap-2">
@@ -42,7 +39,7 @@
     <script>
         document.getElementById('deptForm').addEventListener('submit', function (e) {
             var errores = [];
-            if (!this.dept_no.value.trim()) errores.push('El c�digo es requerido.');
+            if (!this.dept_no.value.trim()) errores.push('El código es requerido.');
             if (!this.dept_name.value.trim()) errores.push('El nombre es requerido.');
             if (errores.length > 0) {
                 alert(errores.join('\n'));

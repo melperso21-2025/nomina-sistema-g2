@@ -18,8 +18,11 @@
         <div class="text-muted small">@ViewBag.FullName — Cédula: @ViewBag.Ci</div>
     </div>
     <div class="d-flex gap-2">
-        <a asp-controller="Titles" asp-action="Edit" asp-route-id="@ViewBag.EmpNo"
-           class="btn btn-dark">Editar cargo vigente</a>
+        @if (Context.Session.GetString("rol") == "Admin")
+        {
+            <a asp-controller="Titles" asp-action="Edit" asp-route-id="@ViewBag.EmpNo"
+               class="btn btn-dark">Editar cargo vigente</a>
+        }
         <a asp-controller="Titles" asp-action="Index"
            class="btn btn-outline-secondary">← Regresar a la lista</a>
     </div>

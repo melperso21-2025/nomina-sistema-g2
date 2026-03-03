@@ -57,8 +57,8 @@
                         <th style="width:160px;">Fecha</th>
                         <th>Empleado</th>
                         <th>Cédula</th>
-                        <th>Salario anterior</th>
-                        <th>Salario nuevo</th>
+                        <th class="text-center">Salario anterior</th>
+                        <th class="text-center">Salario nuevo</th>
                         <th style="width:130px;">Desde</th>
                         <th>Usuario</th>
                     </tr>
@@ -71,8 +71,8 @@
                             <td>@item.ActionDate.ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="fw-semibold">@item.FullName</td>
                             <td>@item.Ci</td>
-                            <td class="text-muted">@item.PreviousSalary.ToString("C", usd)</td>
-                            <td class="fw-semibold text-success">@item.NewSalary.ToString("C", usd)</td>
+                            <td class="text-muted text-end">@item.PreviousSalary.ToString("C", usd)</td>
+                            <td class="fw-semibold text-success text-end">@item.NewSalary.ToString("C", usd)</td>
                             <td>@item.FromDate.ToString("dd/MM/yyyy")</td>
                             <td><span class="badge bg-secondary">@(new string(item.UserSession.Where(ch => ch >= ' ' && ch != '\uFFFD').ToArray()))</span></td>
                         </tr>

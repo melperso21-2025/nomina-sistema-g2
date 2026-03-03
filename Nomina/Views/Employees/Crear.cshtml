@@ -1,5 +1,3 @@
-﻿
-
 @model Nomina.Models.CreateEmployeeViewModel
 
 @{
@@ -7,13 +5,13 @@
 }
 
 <div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="mb-0">?? New Employee</h2>
-    <a asp-controller="Employees" asp-action="Index" class="btn btn-outline-secondary">? Back</a>
+    <h2 class="mb-0">👤 New Employee</h2>
+    <a asp-controller="Employees" asp-action="Index" class="btn btn-outline-secondary">← Back</a>
 </div>
 
 @if (ViewBag.Error != null)
 {
-    <div class="alert alert-danger">?? @ViewBag.Error</div>
+    <div class="alert alert-danger">@ViewBag.Error</div>
 }
 
 <div class="card shadow-sm" style="max-width:650px;">
@@ -23,37 +21,38 @@
 
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Emp #</label>
-                    <input type="number" name="EmpNo" class="form-control" required />
+                    <label class="form-label fw-semibold">Emp #</label>
+                    <input type="number" name="EmpNo" class="form-control bg-light"
+                           value="@ViewBag.NextEmpNo" readonly />
                     <span asp-validation-for="EmpNo" class="text-danger small"></span>
                 </div>
                 <div class="col-md-8">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> CI</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> CI</label>
                     <input type="text" name="Ci" class="form-control" required maxlength="50" />
                     <span asp-validation-for="Ci" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> First name</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> First name</label>
                     <input type="text" name="FirstName" class="form-control" required maxlength="50" />
                     <span asp-validation-for="FirstName" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Last name</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Last name</label>
                     <input type="text" name="LastName" class="form-control" required maxlength="50" />
                     <span asp-validation-for="LastName" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Birth date</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Birth date</label>
                     <input type="date" name="BirthDate" class="form-control" required />
                     <span asp-validation-for="BirthDate" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Hire date</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Hire date</label>
                     <input type="date" name="HireDate" class="form-control" required />
                     <span asp-validation-for="HireDate" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Gender</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Gender</label>
                     <select name="Gender" class="form-select" required>
                         <option value="">Select...</option>
                         <option value="M">Male</option>
@@ -62,17 +61,17 @@
                     <span asp-validation-for="Gender" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Email</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Email</label>
                     <input type="email" name="Email" class="form-control" required maxlength="100" />
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Password</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Password</label>
                     <input type="password" name="Password" class="form-control" required />
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Role</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Role</label>
                     <select name="Role" class="form-select" required>
                         <option value="">Select...</option>
                         <option value="Admin">Admin</option>
@@ -81,7 +80,7 @@
                     <span asp-validation-for="Role" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Department</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Department</label>
                     <select name="DeptNo" class="form-select" required>
                         <option value="">Select...</option>
                         @foreach (var d in ViewBag.Departamentos as IEnumerable<Nomina.Models.DepartmentItem>)
@@ -92,12 +91,12 @@
                     <span asp-validation-for="DeptNo" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Initial salary</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Initial salary</label>
                     <input type="number" name="Salary" class="form-control" required min="1" />
                     <span asp-validation-for="Salary" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">?</span> Title / Position</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Title / Position</label>
                     <input type="text" name="Title" class="form-control" required maxlength="50" />
                     <span asp-validation-for="Title" class="text-danger small"></span>
                 </div>

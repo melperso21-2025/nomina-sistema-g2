@@ -73,8 +73,8 @@
                 <thead class="table-dark">
                     <tr>
                         <th>Empleado</th>
-                        <th>Anterior</th>
-                        <th>Nuevo Salario</th>
+                        <th class="text-center">Anterior</th>
+                        <th class="text-center">Nuevo Salario</th>
                         <th>Fecha</th>
                         <th>Usuario</th>
                     </tr>
@@ -84,8 +84,8 @@
                     {
                         <tr>
                             <td class="fw-semibold">@c.FullName</td>
-                            <td class="text-muted">@c.PreviousSalary.ToString("C0", usd)</td>
-                            <td>
+                            <td class="text-muted text-end">@c.PreviousSalary.ToString("C0", usd)</td>
+                            <td class="text-end">
                                 <span class="text-success fw-semibold">
                                     @c.NewSalary.ToString("C0", usd)
                                 </span>

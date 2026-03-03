@@ -163,6 +163,17 @@ namespace Nomina.Controllers
             }
 
             CargarDepartamentos();
+
+            string connStr = _config.GetConnectionString("NominaDB");
+            using (var conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand("SELECT ISNULL(MAX(emp_no), 0) + 1 FROM employees", conn))
+                {
+                    ViewBag.NextEmpNo = (int)cmd.ExecuteScalar();
+                }
+            }
+
             ViewBag.Usuario = HttpContext.Session.GetString("usuario");
             return View();
         }
