@@ -71,6 +71,13 @@
             <input type="text" name="searchString" value="@ViewBag.SearchString"
                    class="form-control" style="min-width:280px;" placeholder="Ej: Analista o García" />
         </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="showInactive" name="showInactive" 
+                   value="true" @(ViewBag.ShowInactive ? "checked" : "") />
+            <label class="form-check-label" for="showInactive">
+                Mostrar inactivos
+            </label>
+        </div>
         <button type="submit" class="btn btn-dark">🔍 Buscar</button>
         <a asp-controller="Titles" asp-action="Index" class="btn btn-outline-secondary">Limpiar</a>
     </div>
@@ -103,6 +110,7 @@
                             </a>
                         </th>
                         <th style="width:120px;">Hasta</th>
+                        <th class="text-center" style="width:100px;">Estado</th>
                         <th class="text-end" style="width:120px;">Acciones</th>
                     </tr>
                 </thead>
@@ -120,6 +128,16 @@
                                 { <span class="badge bg-success">Vigente</span> }
                                 else
                                 { @t.ToDate.Value.ToString("dd/MM/yyyy") }
+                            </td>
+                            <td class="text-center">
+                                @if (t.IsActive)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                }
                             </td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-secondary"

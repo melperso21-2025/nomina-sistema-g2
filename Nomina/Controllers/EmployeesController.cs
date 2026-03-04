@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 using Nomina.Models;
@@ -21,7 +22,7 @@ namespace Nomina.Controllers
         }
 
         // GET: /Empleados
-        public IActionResult Index(string searchString = null, int page = 1)
+        public IActionResult Index(string searchString = null, int page = 1, bool showInactive = false)
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
@@ -31,15 +32,17 @@ namespace Nomina.Controllers
             int pageSize = 20;
             string connStr = _config.GetConnectionString("NominaDB");
 
-            const string baseFrom = @"
+            string activeFilter = showInactive ? "" : "AND e.is_active = 1";
+            const string baseFromTemplate = @"
                 FROM employees e
                 LEFT JOIN dept_emp   de ON e.emp_no = de.emp_no   AND de.to_date IS NULL
                 LEFT JOIN departments d  ON de.dept_no = d.dept_no
-                WHERE e.is_active = 1
-                  AND (@search IS NULL
+                WHERE (@search IS NULL
                        OR e.first_name LIKE '%' + @search + '%'
                        OR e.last_name  LIKE '%' + @search + '%'
                        OR e.ci         LIKE '%' + @search + '%')";
+
+            string baseFrom = baseFromTemplate + (showInactive ? "" : " AND e.is_active = 1");
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -58,7 +61,8 @@ namespace Nomina.Controllers
                     SELECT e.emp_no, e.ci,
                            e.first_name + ' ' + e.last_name AS full_name,
                            e.email, e.hire_date, e.gender,
-                           ISNULL(d.dept_name, 'Sin departamento') AS dept_name
+                           ISNULL(d.dept_name, 'Sin departamento') AS dept_name,
+                           e.is_active
                     " + baseFrom + @"
                     ORDER BY e.last_name, e.first_name
                     OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
@@ -82,18 +86,20 @@ namespace Nomina.Controllers
                                 Email    = reader.GetString(3),
                                 HireDate = reader.GetDateTime(4),
                                 Gender   = reader.GetString(5),
-                                DeptName = reader.GetString(6)
+                                DeptName = reader.GetString(6),
+                                IsActive = reader.GetBoolean(7)
                             });
                         }
                     }
                 }
             }
 
-            ViewBag.Total        = total;
-            ViewBag.Page         = page;
-            ViewBag.SearchString = searchString;
-            ViewBag.Usuario      = HttpContext.Session.GetString("usuario");
-            ViewBag.Rol          = HttpContext.Session.GetString("rol");
+            ViewBag.Total          = total;
+            ViewBag.Page           = page;
+            ViewBag.SearchString   = searchString;
+            ViewBag.ShowInactive   = showInactive;
+            ViewBag.Usuario        = HttpContext.Session.GetString("usuario");
+            ViewBag.Rol            = HttpContext.Session.GetString("rol");
 
             return View(empleados);
         }
@@ -163,6 +169,7 @@ namespace Nomina.Controllers
             }
 
             CargarDepartamentos();
+            CargarTitulos();
 
             string connStr = _config.GetConnectionString("NominaDB");
             using (var conn = new SqlConnection(connStr))
@@ -194,34 +201,80 @@ namespace Nomina.Controllers
             if (!ModelState.IsValid)
             {
                 CargarDepartamentos();
-                return View(model);
+                CargarTitulos();
+
+                // Si RequiresSystemAccess es false, ignorar errores de Password y Role
+                if (!model.RequiresSystemAccess)
+                {
+                    ModelState.Remove("Password");
+                    ModelState.Remove("Role");
+                }
+
+                // Si aún hay errores después de remover, mostrarlos
+                if (!ModelState.IsValid)
+                {
+                    var errorMessages = ModelState.Values.SelectMany(v => v.Errors);
+                    ViewBag.Error = string.Join("\n", errorMessages.Select(e => e.ErrorMessage));
+                    return View(model);
+                }
             }
 
-            byte[] passwordHash = SHA256.HashData(Encoding.UTF8.GetBytes(model.Password));
+            // Validar Password y Role solo si RequiresSystemAccess = true
+            if (model.RequiresSystemAccess)
+            {
+                if (string.IsNullOrWhiteSpace(model.Password))
+                {
+                    ViewBag.Error = "La contraseña es requerida si el empleado requiere acceso al sistema.";
+                    CargarDepartamentos();
+                    CargarTitulos();
+                    return View(model);
+                }
+
+                if (string.IsNullOrWhiteSpace(model.Role))
+                {
+                    ViewBag.Error = "El rol es requerido si el empleado requiere acceso al sistema.";
+                    CargarDepartamentos();
+                    CargarTitulos();
+                    return View(model);
+                }
+            }
+
             string userSession  = HttpContext.Session.GetString("usuario");
             string connStr      = _config.GetConnectionString("NominaDB");
+            byte[] passwordHash = null;
+
+            // Solo hashear contraseña si requiere acceso al sistema
+            if (model.RequiresSystemAccess && !string.IsNullOrWhiteSpace(model.Password))
+            {
+                passwordHash = SHA256.HashData(Encoding.ASCII.GetBytes(model.Password));
+            }
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
-                using (SqlCommand cmd = new SqlCommand("sp_insert_full_employee", conn))
+                using (SqlCommand cmd = new SqlCommand("sp_insert_employee_conditional", conn))
                 {
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@p_emp_no",        model.EmpNo);
-                    cmd.Parameters.AddWithValue("@p_ci",            model.Ci);
-                    cmd.Parameters.AddWithValue("@p_first_name",    model.FirstName);
-                    cmd.Parameters.AddWithValue("@p_last_name",     model.LastName);
-                    cmd.Parameters.AddWithValue("@p_birth_date",    model.BirthDate);
-                    cmd.Parameters.AddWithValue("@p_gender",        model.Gender);
-                    cmd.Parameters.AddWithValue("@p_hire_date",     model.HireDate);
-                    cmd.Parameters.AddWithValue("@p_email",         model.Email);
-                    cmd.Parameters.AddWithValue("@p_password_hash", passwordHash);
-                    cmd.Parameters.AddWithValue("@p_role",          model.Role);
-                    cmd.Parameters.AddWithValue("@p_dept_no",       model.DeptNo);
-                    cmd.Parameters.AddWithValue("@p_salary",        model.Salary);
-                    cmd.Parameters.AddWithValue("@p_title",         model.Title);
-                    cmd.Parameters.AddWithValue("@p_user_session",  userSession);
+                    cmd.Parameters.AddWithValue("@p_emp_no",            model.EmpNo);
+                    cmd.Parameters.AddWithValue("@p_ci",                model.Ci);
+                    cmd.Parameters.AddWithValue("@p_first_name",        model.FirstName);
+                    cmd.Parameters.AddWithValue("@p_last_name",         model.LastName);
+                    cmd.Parameters.AddWithValue("@p_birth_date",        model.BirthDate);
+                    cmd.Parameters.AddWithValue("@p_gender",            model.Gender);
+                    cmd.Parameters.AddWithValue("@p_hire_date",         model.HireDate);
+                    cmd.Parameters.AddWithValue("@p_email",             model.Email);
+                    cmd.Parameters.AddWithValue("@p_requires_access",   model.RequiresSystemAccess);
+                    SqlParameter pPasswordHash = new SqlParameter("@p_password_hash", SqlDbType.VarBinary, 32)
+                    { 
+                        Value = (object)passwordHash ?? DBNull.Value 
+                    };
+                    cmd.Parameters.Add(pPasswordHash);
+                    cmd.Parameters.AddWithValue("@p_role",              model.Role ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@p_dept_no",           model.DeptNo);
+                    cmd.Parameters.AddWithValue("@p_salary",            model.Salary);
+                    cmd.Parameters.AddWithValue("@p_title",             model.Title);
+                    cmd.Parameters.AddWithValue("@p_user_session",      userSession);
 
                     SqlParameter pMessage = new SqlParameter("@r_message", System.Data.SqlDbType.VarChar, 200)
                     { Direction = System.Data.ParameterDirection.Output };
@@ -232,7 +285,8 @@ namespace Nomina.Controllers
                     string message = pMessage.Value.ToString();
                     if (message.StartsWith("SUCCESS"))
                     {
-                        RegistrarActividad("Employees", "CREATE", $"Empleado creado: emp_no={model.EmpNo}, CI={model.Ci}");
+                        RegistrarActividad("Employees", "CREATE", 
+                            $"Empleado creado: emp_no={model.EmpNo}, CI={model.Ci}, RequiresAccess={model.RequiresSystemAccess}");
                         TempData["Exito"] = "Empleado registrado correctamente.";
                         return RedirectToAction("Index");
                     }
@@ -240,6 +294,7 @@ namespace Nomina.Controllers
                     {
                         ViewBag.Error = message.Replace("ERROR: ", "");
                         CargarDepartamentos();
+                        CargarTitulos();
                         return View(model);
                     }
                 }
@@ -617,6 +672,30 @@ namespace Nomina.Controllers
             }
 
             ViewBag.Departamentos = departamentos;
+        }
+
+        private void CargarTitulos()
+        {
+            var titulos = new List<string>();
+            string connStr = _config.GetConnectionString("NominaDB");
+
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand(
+                    "SELECT DISTINCT LOWER(title) AS titulo FROM titles ORDER BY LOWER(title)", conn))
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string titulo = reader.GetString(0);
+                        if (!string.IsNullOrWhiteSpace(titulo))
+                            titulos.Add(titulo);
+                    }
+                }
+            }
+
+            ViewBag.Titulos = titulos;
         }
     }
 }

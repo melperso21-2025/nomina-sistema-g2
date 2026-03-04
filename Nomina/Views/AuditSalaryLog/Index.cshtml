@@ -13,6 +13,19 @@
     </div>
 </div>
 
+<div class="card shadow-sm mb-3">
+    <div class="card-body d-flex gap-2 flex-wrap align-items-end">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="showInactive" name="showInactive" 
+                   value="true" @(ViewBag.ShowInactive ? "checked" : "") 
+                   onchange="location.href='@Url.Action("Index")' + (this.checked ? '?showInactive=true' : '')" />
+            <label class="form-check-label" for="showInactive">
+                Mostrar inactivos
+            </label>
+        </div>
+    </div>
+</div>
+
 <div class="card shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -25,6 +38,7 @@
                         <th class="text-center">Salario nuevo</th>
                         <th class="text-center" style="width:130px;">Desde</th>
                         <th style="width:160px;">Fecha</th>
+                        <th class="text-center" style="width:100px;">Estado Emp.</th>
                         <th>Usuario</th>
                     </tr>
                 </thead>
@@ -49,6 +63,16 @@
                                 }
                             </td>
                             <td>@log.ActionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">
+                                @if (log.IsActive)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                }
+                            </td>
                             <td>
                                 <span class="badge bg-secondary">
                                     @(new string((log.UserResponsable ?? "").Where(ch => ch >= ' ' && ch != '\uFFFD').ToArray()).Trim())

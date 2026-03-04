@@ -8,6 +8,41 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Nomina.Models
 {
+    // ─── VALIDADORES PERSONALIZADOS ─────────────────────────────
+
+    /// <summary>
+    /// Validador que hace un campo requerido solo si otra propiedad tiene un valor específico
+    /// </summary>
+    public class RequiredIfAttribute : ValidationAttribute
+    {
+        private readonly string _conditionalPropertyName;
+        private readonly object _conditionalPropertyValue;
+
+        public RequiredIfAttribute(string conditionalPropertyName, object conditionalPropertyValue)
+        {
+            _conditionalPropertyName = conditionalPropertyName;
+            _conditionalPropertyValue = conditionalPropertyValue;
+        }
+
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var property = validationContext.ObjectType.GetProperty(_conditionalPropertyName);
+            if (property == null)
+                return ValidationResult.Success;
+
+            var conditionalValue = property.GetValue(validationContext.ObjectInstance);
+
+            // Si la condición se cumple y el valor actual es nulo o vacío, es inválido
+            if (Equals(conditionalValue, _conditionalPropertyValue))
+            {
+                if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+                    return new ValidationResult(ErrorMessage ?? $"El campo {validationContext.DisplayName} es requerido.");
+            }
+
+            return ValidationResult.Success;
+        }
+    }
+
     // ─── LOGIN ───────────────────────────────────────────────────
 
     public class LoginViewModel
@@ -30,6 +65,7 @@ namespace Nomina.Models
         public DateTime HireDate { get; set; } = DateTime.MinValue;
         public string Gender { get; set; } = string.Empty;
         public string DeptName { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
     }
 
     public class EmployeeDetail
@@ -77,14 +113,16 @@ namespace Nomina.Models
         [EmailAddress(ErrorMessage = "Email no válido")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "La contraseña es requerida")]
+        // Sistema de acceso - Opcional
+        public bool RequiresSystemAccess { get; set; } = false;
+
+        // Password y Role son opcionales - se validan en el controlador si RequiresSystemAccess = true
         public string Password { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El rol es requerido")]
         public string Role { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El departamento es requerido")]
-        public string DeptNo { get; set; } = string.Empty;
+        public int DeptNo { get; set; } = 0;
 
         [Required(ErrorMessage = "El salario es requerido")]
         [Range(1, long.MaxValue, ErrorMessage = "El salario debe ser mayor a 0")]
@@ -146,6 +184,7 @@ namespace Nomina.Models
         public long PreviousSalary { get; set; } = 0;
         public long NewSalary { get; set; } = 0;
         public string UserSession { get; set; } = string.Empty;
+        public bool IsActive { get; set; } = true;
     }
 
     // ─── SALARIOS ────────────────────────────────────────────────
@@ -221,6 +260,7 @@ public DateTime FromDate       { get; set; }
         public decimal   Salary    { get; set; }
         public DateTime  FromDate  { get; set; }
         public DateTime? ToDate    { get; set; }
+        public bool      IsActive  { get; set; } = true;
     }
 
     // ─── CARGOS (TITLES) ────────────────────────────────────────
@@ -233,6 +273,7 @@ public DateTime FromDate       { get; set; }
         public string    TitleName { get; set; }
         public DateTime  FromDate  { get; set; }
         public DateTime? ToDate    { get; set; }
+        public bool      IsActive  { get; set; } = true;
     }
 
     // ─── REPORTES — ESTRUCTURA ORGANIZACIONAL ───────────────────
