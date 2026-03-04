@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../Nomina.Tests/Nomina.Tests.csproj" Id="96aca8f1-b3ab-46ed-84ed-a1af12266c43" />
   <Project Path="nomina.csproj" />
 </Solution>
