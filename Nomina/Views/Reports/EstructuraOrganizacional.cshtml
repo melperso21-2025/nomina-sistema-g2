@@ -22,7 +22,13 @@
     </div>
     <div class="d-flex gap-2">
         <a asp-controller="Reports" asp-action="Index" class="btn btn-outline-secondary">← Volver</a>
-        <button class="btn btn-success" onclick="window.print()">🖨️ Generar PDF / Imprimir</button>
+        <button class="btn" style="background-color:#D32F2F; color:white;" onclick="window.print()">
+            <i class="bi bi-file-pdf"></i> PDF / Imprimir
+        </button>
+        <a asp-controller="Reports" asp-action="ExportarEstructuraExcel"
+           class="btn" style="background-color:#217346; color:white;">
+            <i class="bi bi-file-earmark-excel"></i> Excel
+        </a>
     </div>
 </div>
 
