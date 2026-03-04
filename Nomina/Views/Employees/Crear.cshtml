@@ -1,17 +1,17 @@
 @model Nomina.Models.CreateEmployeeViewModel
 
 @{
-    ViewData["Title"] = "New Employee";
+    ViewData["Title"] = "Nuevo Empleado";
 }
 
 <div class="d-flex align-items-center justify-content-between mb-4">
-    <h2 class="mb-0">👤 New Employee</h2>
-    <a asp-controller="Employees" asp-action="Index" class="btn btn-outline-secondary">← Back</a>
+    <h2 class="mb-0">👤 Nuevo Empleado</h2>
+    <a asp-controller="Employees" asp-action="Index" class="btn btn-outline-secondary">← Atrás</a>
 </div>
 
 @if (ViewBag.Error != null)
 {
-    <div class="alert alert-danger">@ViewBag.Error</div>
+    <div class="alert alert-danger">⚠️ @ViewBag.Error</div>
 }
 
 <div class="card shadow-sm" style="max-width:650px;">
@@ -21,10 +21,10 @@
 
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold">Emp #</label>
-                    <input type="number" name="EmpNo" class="form-control bg-light"
-                           value="@ViewBag.NextEmpNo" readonly />
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Emp #</label>
+                    <input type="number" name="EmpNo" class="form-control" value="@ViewBag.NextEmpNo" readonly />
                     <span asp-validation-for="EmpNo" class="text-danger small"></span>
+                    <div class="form-text text-muted">Asignado automáticamente</div>
                 </div>
                 <div class="col-md-8">
                     <label class="form-label fw-semibold"><span class="text-danger">*</span> CI</label>
@@ -32,31 +32,31 @@
                     <span asp-validation-for="Ci" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> First name</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Nombre</label>
                     <input type="text" name="FirstName" class="form-control" required maxlength="50" />
                     <span asp-validation-for="FirstName" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Last name</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Apellido</label>
                     <input type="text" name="LastName" class="form-control" required maxlength="50" />
                     <span asp-validation-for="LastName" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Birth date</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Fecha de nacimiento</label>
                     <input type="date" name="BirthDate" class="form-control" required />
                     <span asp-validation-for="BirthDate" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Hire date</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Fecha de ingreso</label>
                     <input type="date" name="HireDate" class="form-control" required />
                     <span asp-validation-for="HireDate" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Gender</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Género</label>
                     <select name="Gender" class="form-select" required>
-                        <option value="">Select...</option>
-                        <option value="M">Male</option>
-                        <option value="F">Female</option>
+                        <option value="">Seleccionar...</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
                     </select>
                     <span asp-validation-for="Gender" class="text-danger small"></span>
                 </div>
@@ -65,24 +65,43 @@
                     <input type="email" name="Email" class="form-control" required maxlength="100" />
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Password</label>
-                    <input type="password" name="Password" class="form-control" required />
+
+                <!-- CHECKBOX SYSTEM ACCESS -->
+                <div class="col-12 mb-3">
+                    <div class="form-check form-switch" style="padding-top:0.5rem;">
+                        <input class="form-check-input" type="checkbox" id="requiresAccessCheck" 
+                               name="RequiresSystemAccess" value="true" />
+                        <label class="form-check-label fw-semibold" for="requiresAccessCheck">
+                            🔐 ¿Este empleado requiere acceso al sistema?
+                        </label>
+                        <div class="form-text text-muted">
+                            Si está marcado, se creará una cuenta de usuario para acceso al sistema.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASSWORD FIELD (Hidden by default) -->
+                <div class="col-md-6" id="passwordSection" style="display:none;">
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Contraseña</label>
+                    <input type="password" name="Password" class="form-control" minlength="6" />
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Role</label>
-                    <select name="Role" class="form-select" required>
-                        <option value="">Select...</option>
+
+                <!-- ROLE FIELD (Hidden by default) -->
+                <div class="col-md-6" id="roleSection" style="display:none;">
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Rol</label>
+                    <select name="Role" class="form-select">
+                        <option value="">Seleccionar...</option>
                         <option value="Admin">Admin</option>
                         <option value="RRHH">RRHH</option>
                     </select>
                     <span asp-validation-for="Role" class="text-danger small"></span>
                 </div>
+
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Department</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Departamento</label>
                     <select name="DeptNo" class="form-select" required>
-                        <option value="">Select...</option>
+                        <option value="">Seleccionar...</option>
                         @foreach (var d in ViewBag.Departamentos as IEnumerable<Nomina.Models.DepartmentItem>)
                         {
                             <option value="@d.DeptNo">@d.DeptName</option>
@@ -91,21 +110,62 @@
                     <span asp-validation-for="DeptNo" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Initial salary</label>
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Salario inicial</label>
                     <input type="number" name="Salary" class="form-control" required min="1" />
                     <span asp-validation-for="Salary" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Title / Position</label>
-                    <input type="text" name="Title" class="form-control" required maxlength="50" />
+                    <label class="form-label fw-semibold"><span class="text-danger">*</span> Cargo / Puesto</label>
+                    <input type="text" name="Title" class="form-control" list="titulosList" 
+                           required maxlength="50" placeholder="Selecciona o digita un puesto" />
+                    <datalist id="titulosList">
+                        @if (ViewBag.Titulos != null)
+                        {
+                            @foreach (var titulo in ViewBag.Titulos)
+                            {
+                                <option value="@titulo">@titulo</option>
+                            }
+                        }
+                    </datalist>
                     <span asp-validation-for="Title" class="text-danger small"></span>
+                    <div class="form-text text-muted">Selecciona de la lista o digita uno nuevo</div>
                 </div>
             </div>
 
             <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn btn-dark px-4">Save</button>
-                <a asp-controller="Employees" asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                <button type="submit" class="btn btn-dark px-4">Guardar</button>
+                <a asp-controller="Employees" asp-action="Index" class="btn btn-outline-secondary px-4">Cancelar</a>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    // Toggle password and role fields based on system access checkbox
+    const checkbox = document.getElementById('requiresAccessCheck');
+    const passwordSection = document.getElementById('passwordSection');
+    const roleSection = document.getElementById('roleSection');
+    const passwordInput = document.querySelector('input[name="Password"]');
+    const roleInput = document.querySelector('select[name="Role"]');
+
+    function toggleAccessFields() {
+        if (checkbox.checked) {
+            // Show fields and make them required
+            passwordSection.style.display = 'block';
+            roleSection.style.display = 'block';
+            passwordInput.required = true;
+            roleInput.required = true;
+        } else {
+            // Hide fields and make them optional
+            passwordSection.style.display = 'none';
+            roleSection.style.display = 'none';
+            passwordInput.required = false;
+            roleInput.required = false;
+            passwordInput.value = '';
+            roleInput.value = '';
+        }
+    }
+
+    checkbox.addEventListener('change', toggleAccessFields);
+    document.addEventListener('DOMContentLoaded', toggleAccessFields);
+</script>

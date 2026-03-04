@@ -76,6 +76,7 @@
                         <th class="text-center">Anterior</th>
                         <th class="text-center">Nuevo Salario</th>
                         <th>Fecha</th>
+                        <th class="text-center" style="width:100px;">Estado</th>
                         <th>Usuario</th>
                     </tr>
                 </thead>
@@ -95,6 +96,16 @@
                                     @c.ActionDate.ToString("dd/MM/yyyy HH:mm")
                                 </small>
                             </td>
+                            <td class="text-center">
+                                @if (c.IsActive)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                }
+                            </td>
                             <td>
                                 <span class="badge bg-secondary fw-normal">
                                     @(new string((c.UserSession ?? "").Where(ch => ch >= ' ' && ch != '\uFFFD').ToArray()).Trim())
@@ -105,7 +116,7 @@
                     @if (!Model.UltimosCambios.Any())
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-5">
+                            <td colspan="6" class="text-center text-muted py-5">
                                 <i class="fa-solid fa-circle-info me-2"></i>
                                 No hay cambios de salario registrados.
                             </td>

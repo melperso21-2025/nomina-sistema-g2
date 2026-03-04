@@ -17,7 +17,7 @@ namespace Nomina.Controllers
             HttpContext.Session.GetString("usuario") != null;
 
         // GET: /Titles
-        public IActionResult Index(string searchString = null, int page = 1, string sortBy = "cargo", string sortDirection = "asc")
+        public IActionResult Index(string searchString = null, int page = 1, string sortBy = "cargo", string sortDirection = "asc", bool showInactive = false)
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
@@ -27,10 +27,11 @@ namespace Nomina.Controllers
             int pageSize = 20;
             string connStr = _config.GetConnectionString("NominaDB");
 
-            const string baseFrom = @"
+            string baseFrom = @"
                 FROM titles t
                 INNER JOIN employees e ON t.emp_no = e.emp_no
-                WHERE (@search IS NULL
+                WHERE " + (showInactive ? "" : "e.is_active = 1 AND ") + @"
+                  (@search IS NULL
                        OR t.title       LIKE '%' + @search + '%'
                        OR e.first_name  LIKE '%' + @search + '%'
                        OR e.last_name   LIKE '%' + @search + '%'
@@ -68,7 +69,7 @@ namespace Nomina.Controllers
                 string dataSql = @"
                     SELECT t.emp_no,
                            e.first_name + ' ' + e.last_name AS full_name,
-                           e.ci, t.title, t.from_date, t.to_date
+                           e.ci, t.title, t.from_date, t.to_date, e.is_active
                     " + baseFrom + @"
                     " + orderByClause + @"
                     OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
@@ -92,20 +93,22 @@ namespace Nomina.Controllers
                                     TitleName = reader.GetValue(3).ToString(),
                                     FromDate  = Convert.ToDateTime(reader.GetValue(4)),
                                     ToDate    = reader.IsDBNull(5) ? (DateTime?)null
-                                                                   : Convert.ToDateTime(reader.GetValue(5))
+                                                                   : Convert.ToDateTime(reader.GetValue(5)),
+                                    IsActive  = Convert.ToBoolean(reader.GetValue(6))
                                 });
                         }
                     }
                 }
             }
 
-            ViewBag.Total        = total;
-            ViewBag.Page         = page;
-            ViewBag.SearchString = searchString;
-            ViewBag.SortBy       = sortBy;
+            ViewBag.Total         = total;
+            ViewBag.Page          = page;
+            ViewBag.SearchString  = searchString;
+            ViewBag.SortBy        = sortBy;
             ViewBag.SortDirection = sortDirection;
-            ViewBag.Usuario      = HttpContext.Session.GetString("usuario");
-            ViewBag.Rol          = HttpContext.Session.GetString("rol");
+            ViewBag.ShowInactive  = showInactive;
+            ViewBag.Usuario       = HttpContext.Session.GetString("usuario");
+            ViewBag.Rol           = HttpContext.Session.GetString("rol");
 
             return View(cargos);
         }
@@ -208,7 +211,7 @@ namespace Nomina.Controllers
                            e.ci, t.title, t.from_date, t.to_date
                     FROM titles t
                     INNER JOIN employees e ON t.emp_no = e.emp_no
-                    WHERE t.emp_no = @empNo
+                    WHERE t.emp_no = @empNo AND e.is_active = 1
                     ORDER BY t.from_date DESC";
 
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
@@ -270,7 +273,7 @@ namespace Nomina.Controllers
                            e.ci, t.title, t.from_date, t.to_date
                     FROM titles t
                     INNER JOIN employees e ON t.emp_no = e.emp_no
-                    WHERE t.emp_no = @empNo
+                    WHERE t.emp_no = @empNo AND e.is_active = 1
                     ORDER BY t.from_date DESC";
 
                 using (SqlCommand cmd = new SqlCommand(sql, conn))

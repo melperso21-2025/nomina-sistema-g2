@@ -17,7 +17,7 @@ namespace Nomina.Controllers
             HttpContext.Session.GetString("usuario") != null;
 
         // GET: /Salaries
-        public IActionResult Index(string sortBy = "empleado", string sortDirection = "asc")
+        public IActionResult Index(string sortBy = "empleado", string sortDirection = "asc", bool showInactive = false)
         {
             if (!VerificarSesion())
                 return RedirectToAction("Login", "Account");
@@ -53,10 +53,10 @@ namespace Nomina.Controllers
                 using (SqlCommand cmd = new SqlCommand(
                     "SELECT s.id_salary, s.emp_no, " +
                     "e.first_name + ' ' + e.last_name AS full_name, " +
-                    "s.salary, s.from_date, s.to_date " +
+                    "s.salary, s.from_date, s.to_date, e.is_active " +
                     "FROM salaries s " +
                     "INNER JOIN employees e ON s.emp_no = e.emp_no " +
-                    "WHERE s.to_date IS NULL " +
+                    (showInactive ? "" : "WHERE s.to_date IS NULL AND e.is_active = 1 ") +
                     orderByClause, conn))
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -69,7 +69,8 @@ namespace Nomina.Controllers
                             FullName  = reader.GetValue(2).ToString(),
                             Salary    = Convert.ToDecimal(reader.GetValue(3)),
                             FromDate  = Convert.ToDateTime(reader.GetValue(4)),
-                            ToDate    = reader.IsDBNull(5) ? null : Convert.ToDateTime(reader.GetValue(5))
+                            ToDate    = reader.IsDBNull(5) ? null : Convert.ToDateTime(reader.GetValue(5)),
+                            IsActive  = Convert.ToBoolean(reader.GetValue(6))
                         });
                     }
                 }
@@ -77,6 +78,7 @@ namespace Nomina.Controllers
 
             ViewBag.SortBy = sortBy;
             ViewBag.SortDirection = sortDirection;
+            ViewBag.ShowInactive = showInactive;
             return View(salarios);
         }
 
@@ -256,10 +258,10 @@ namespace Nomina.Controllers
                 using (SqlCommand cmd = new SqlCommand(
                     "SELECT s.id_salary, s.emp_no, " +
                     "e.first_name + ' ' + e.last_name AS full_name, " +
-                    "s.salary, s.from_date, s.to_date " +
+                    "s.salary, s.from_date, s.to_date, e.is_active " +
                     "FROM salaries s " +
                     "INNER JOIN employees e ON s.emp_no = e.emp_no " +
-                    "WHERE s.id_salary = @id", conn))
+                    "WHERE s.id_salary = @id AND e.is_active = 1", conn))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -273,7 +275,8 @@ namespace Nomina.Controllers
                                 FullName  = reader.GetValue(2).ToString(),
                                 Salary    = Convert.ToDecimal(reader.GetValue(3)),
                                 FromDate  = Convert.ToDateTime(reader.GetValue(4)),
-                                ToDate    = reader.IsDBNull(5) ? null : Convert.ToDateTime(reader.GetValue(5))
+                                ToDate    = reader.IsDBNull(5) ? null : Convert.ToDateTime(reader.GetValue(5)),
+                                IsActive  = Convert.ToBoolean(reader.GetValue(6))
                             };
                         }
                     }

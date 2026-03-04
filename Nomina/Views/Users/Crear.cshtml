@@ -21,11 +21,11 @@
                 <label class="form-label fw-semibold">
                     <span class="text-danger">*</span> Empleado
                 </label>
-                <select name="empNo" class="form-select" required>
+                <select name="empNo" id="empSelect" class="form-select" required>
                     <option value="">— Seleccionar empleado —</option>
                     @foreach (dynamic emp in ViewBag.Empleados)
                     {
-                        <option value="@emp.EmpNo">[@emp.EmpNo] @emp.FullName</option>
+                        <option value="@emp.EmpNo" data-fullname="@emp.FullName">[@emp.EmpNo] @emp.FullName</option>
                     }
                 </select>
                 <div class="form-text text-muted">Solo empleados sin cuenta de acceso.</div>
@@ -35,8 +35,9 @@
                 <label class="form-label fw-semibold">
                     <span class="text-danger">*</span> Nombre de Usuario
                 </label>
-                <input type="text" name="username" class="form-control"
-                       required maxlength="100" placeholder="ej. juan.perez" />
+                <input type="text" name="username" id="usernameInput" class="form-control"
+                       required maxlength="100" placeholder="Se genera automáticamente" />
+                <div class="form-text text-muted">Formato: nombre.apellido (se genera automáticamente al seleccionar empleado)</div>
             </div>
 
             <div class="mb-3">
@@ -68,3 +69,33 @@
         </form>
     </div>
 </div>
+
+<script>
+document.getElementById('empSelect').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const fullName = selectedOption.getAttribute('data-fullname');
+
+    if (fullName) {
+        // Convertir "Juan Perez" a "juan.perez"
+        const username = fullName
+            .toLowerCase()
+            .trim()
+            .split(/\s+/)  // dividir por espacios
+            .filter(word => word.length > 0)  // eliminar espacios vacíos
+            .slice(0, 2)   // tomar solo primeros 2 palabras (nombre y apellido)
+            .join('.');    // unir con punto
+
+        document.getElementById('usernameInput').value = username;
+        document.getElementById('usernameInput').setAttribute('data-suggested', username);
+    }
+});
+
+// Validar que el username solo contenga caracteres permitidos
+document.getElementById('usernameInput').addEventListener('blur', function() {
+    const regex = /^[a-z0-9.]+$/;
+    if (this.value && !regex.test(this.value)) {
+        alert('El nombre de usuario solo puede contener letras minúsculas, números y puntos.');
+        this.value = this.getAttribute('data-suggested') || '';
+    }
+});
+</script>

@@ -31,6 +31,8 @@ namespace Nomina.Models
         [Column("action_date")]
         public DateTime ActionDate { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
         [ForeignKey("empNo")]
         public Employee Employee { get; set; }
     }

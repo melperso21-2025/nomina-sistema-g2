@@ -22,6 +22,13 @@
             <input type="text" name="searchString" value="@ViewBag.SearchString"
                    class="form-control" style="min-width:260px;" placeholder="Ej: García o 0102030405" />
         </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="showInactive" name="showInactive" 
+                   value="true" @(ViewBag.ShowInactive ? "checked" : "") />
+            <label class="form-check-label" for="showInactive">
+                Mostrar inactivos
+            </label>
+        </div>
         <button type="submit" class="btn btn-dark">🔍 Buscar</button>
         <a asp-controller="Employees" asp-action="Index" class="btn btn-outline-secondary">Limpiar</a>
     </div>
@@ -39,6 +46,7 @@
                         <th>Departamento</th>
                         <th style="width:80px;">Género</th>
                         <th style="width:120px;">Fecha ingreso</th>
+                        <th class="text-center" style="width:100px;">Estado</th>
                         <th class="text-end" style="width:160px;">Acciones</th>
                     </tr>
                 </thead>
@@ -52,6 +60,16 @@
                             <td>@emp.DeptName</td>
                             <td>@emp.Gender</td>
                             <td>@emp.HireDate.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center">
+                                @if (emp.IsActive)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactivo</span>
+                                }
+                            </td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-secondary"
                                    asp-controller="Employees" asp-action="Detalle"

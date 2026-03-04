@@ -52,7 +52,8 @@ namespace Nomina.Controllers
                     "sal.previous_salary, " +
                     "sal.new_salary, " +
                     "sal.action_date, " +
-                    "RTRIM(CONVERT(NVARCHAR(200), sal.user_session)) AS user_session " +
+                    "RTRIM(CONVERT(NVARCHAR(200), sal.user_session)) AS user_session, " +
+                    "e.is_active " +
                     "FROM salary_audit_log sal " +
                     "INNER JOIN employees e ON sal.emp_no = e.emp_no " +
                     "ORDER BY sal.action_date DESC", conn))
@@ -66,7 +67,8 @@ namespace Nomina.Controllers
                             PreviousSalary = reader.IsDBNull(1) ? 0L : Convert.ToInt64(reader.GetValue(1)),
                             NewSalary      = Convert.ToInt64(reader.GetValue(2)),
                             ActionDate     = reader.GetDateTime(3),
-                            UserSession    = reader.IsDBNull(4) ? string.Empty : reader.GetString(4)
+                            UserSession    = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                            IsActive       = Convert.ToBoolean(reader.GetValue(5))
                         });
                     }
                 }

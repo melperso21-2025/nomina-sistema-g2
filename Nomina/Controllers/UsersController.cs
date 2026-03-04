@@ -97,6 +97,14 @@ namespace Nomina.Controllers
                 return View();
             }
 
+            // Validar formato de username (solo letras, puntos y números)
+            if (!System.Text.RegularExpressions.Regex.IsMatch(username, @"^[a-z0-9.]+$"))
+            {
+                ViewBag.Error = "El nombre de usuario debe contener solo letras minúsculas, números y puntos.";
+                CargarEmpleadosSinUsuario();
+                return View();
+            }
+
             byte[] hash    = SHA256.HashData(Encoding.UTF8.GetBytes(password));
             string connStr = _config.GetConnectionString("NominaDB");
 
@@ -112,7 +120,7 @@ namespace Nomina.Controllers
                         check.Parameters.AddWithValue("@u", username);
                         if ((int)check.ExecuteScalar() > 0)
                         {
-                            ViewBag.Error = "El nombre de usuario ya está en uso.";
+                            ViewBag.Error = "El nombre de usuario ya está en uso. Intenta con otro (ej: nombre.apellido2).";
                             CargarEmpleadosSinUsuario();
                             return View();
                         }
